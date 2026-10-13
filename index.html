@@ -49,7 +49,12 @@ html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);
 .search-input:focus{border-color:var(--pr)}
 
 /* Module grid */
-.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.mod-card{background:linear-gradient(145deg,#1E2D4A,#2A3F5F);border-radius:18px;padding:22px 16px;text-align:center;cursor:pointer;box-shadow:0 6px 24px rgba(30,45,74,.35),0 2px 8px rgba(0,0,0,.15);transition:transform .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:130px}
+.mod-card:active{transform:scale(.96)}
+.mod-name{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#FFFFFF;line-height:1.25;word-break:break-word;overflow-wrap:break-word}
+.mod-desc{font-size:.78rem;color:#C8943C;font-weight:500;line-height:1.3;letter-spacing:.3px;opacity:.9}
+.mod-icon{font-size:2.2rem}
 .mod-desc{font-size:.66rem;color:var(--t2);line-height:1.3;word-break:break-word;overflow-wrap:break-word}
 .mod-card:active{transform:scale(.97)}
 .mod-icon{font-size:2rem;margin-bottom:8px}
@@ -169,16 +174,16 @@ var PROG=JSON.parse(localStorage.getItem('acad_prog')||'{}');
 var V='home',currentModule='',currentContentId='',currentType='todo',searchQ='',calcTab='margen';
 
 var DEF_MODS=[
-{id:'mod01',nombre:'Constitución y Tipos de Empresa',icono:'🏛️',descripcion:'Derecho societario y formas empresariales',orden:1},
-{id:'mod02',nombre:'Contabilidad e Impuestos',icono:'📊',descripcion:'SIAT, facturación, declaraciones',orden:2},
-{id:'mod03',nombre:'Derecho Laboral',icono:'👥',descripcion:'Contratación, personal, liquidaciones',orden:3},
-{id:'mod04',nombre:'Contratos y Litigios',icono:'📝',descripcion:'Civiles, comerciales, reclamaciones',orden:4},
-{id:'mod05',nombre:'Finanzas Empresariales',icono:'💰',descripcion:'Bancos, préstamos, crédito',orden:5},
-{id:'mod06',nombre:'Compras y Ventas',icono:'🛒',descripcion:'Inventario, proveedores, importaciones',orden:6},
-{id:'mod07',nombre:'Obligaciones Administrativas',icono:'📋',descripcion:'Registros, licencias, cumplimiento',orden:7},
-{id:'mod08',nombre:'Protección Patrimonial',icono:'🛡️',descripcion:'Seguros, riesgos, responsabilidad',orden:8},
-{id:'mod09',nombre:'Gestión Documental',icono:'📁',descripcion:'Trámites, plazos, calendario',orden:9},
-{id:'mod10',nombre:'Casos y Evaluación',icono:'🎯',descripcion:'Ejercicios, glosario, evaluaciones',orden:10}
+{id:'mod01',nombre:'Derecho Societario',descripcion:'Tipos de Empresa',icono:'🏛️',orden:1},
+{id:'mod02',nombre:'Impuestos y SIAT',descripcion:'Contabilidad',icono:'📊',orden:2},
+{id:'mod03',nombre:'Derecho Laboral',descripcion:'Personal',icono:'👥',orden:3},
+{id:'mod04',nombre:'Contratos',descripcion:'Litigios',icono:'📝',orden:4},
+{id:'mod05',nombre:'Finanzas',descripcion:'Bancos',icono:'💰',orden:5},
+{id:'mod06',nombre:'Compras y Ventas',descripcion:'Inventario',icono:'🛒',orden:6},
+{id:'mod07',nombre:'Obligaciones',descripcion:'Licencias',icono:'📋',orden:7},
+{id:'mod08',nombre:'Protección',descripcion:'Seguros',icono:'🛡️',orden:8},
+{id:'mod09',nombre:'Documentos',descripcion:'Trámites',icono:'📁',orden:9},
+{id:'mod10',nombre:'Ejercicios',descripcion:'Evaluación',icono:'🎯',orden:10}
 ];
 
 /* ===== INIT ===== */
@@ -223,8 +228,25 @@ function goBack(){
 function renderHeader(view){
   var h='';
   if(view==='home')h='<div class="hdr-title dn">🎓 Academia Empresarial</div><div class="hdr-sub">Bolivia · Conocimiento empresarial</div>';
-  else if(view==='module'){var m=DATA.modulos.find(function(x){return x.id===currentModule});h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">'+(m?m.icono+' '+m.nombre:'Módulo')+'</div><div class="hdr-sub">'+(m?m.descripcion:'')+'</div></div></div>'}
-  else if(view==='content'){h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">Contenido</div></div></div>'}
+  else if(view==='module'){
+    var m=DATA.modulos.find(function(x){return x.id===currentModule});
+    if(m){
+      var hdrTitles={
+        'mod01':'Constitución y Sociedades. Derecho Societario. Formas Empresariales.',
+        'mod02':'Impuestos y SIAT. Contabilidad. Facturación. Declaraciones.',
+        'mod03':'Derecho Laboral. Contratación. Personal. Liquidaciones.',
+        'mod04':'Contratos. Civiles. Comerciales. Reclamaciones.',
+        'mod05':'Finanzas. Bancos. Préstamos. Crédito.',
+        'mod06':'Compras y Ventas. Inventario. Proveedores. Importaciones.',
+        'mod07':'Obligaciones. Registros. Licencias. Cumplimiento.',
+        'mod08':'Protección Patrimonial. Seguros. Riesgos. Responsabilidad.',
+        'mod09':'Gestión Documental. Trámites. Plazos. Calendario.',
+        'mod10':'Casos Prácticos. Glosario. Evaluaciones.'
+      };
+      h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">'+m.icono+' '+esc(m.nombre)+'</div><div class="hdr-sub">'+(hdrTitles[m.id]||esc(m.descripcion))+'</div></div></div>';
+    }
+  }
+  else if(view==='content')h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">Contenido</div></div></div>';
   else if(view==='search')h='<div class="hdr-title dn">🔍 Buscar</div><div class="hdr-sub">Encuentra temas, normas y procedimientos</div>';
   else if(view==='calc')h='<div class="hdr-title dn">📐 Calculadoras</div><div class="hdr-sub">Herramientas financieras</div>';
   else if(view==='fav')h='<div class="hdr-title dn">⭐ Favoritos</div><div class="hdr-sub">Tu contenido guardado</div>';
