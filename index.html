@@ -7,6 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Academia Empresarial Bolivia</title>
+<link rel="manifest" href="manifest.json">
+<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js')}</script>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2A4A'/%3E%3Crect x='6' y='32' width='52' height='2' rx='1' fill='%23C8943C'/%3E%3Crect x='6' y='42' width='52' height='2' rx='1' fill='%23C8943C' opacity='.6'/%3E%3Crect x='6' y='52' width='30' height='2' rx='1' fill='%23C8943C' opacity='.3'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23C8943C'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23E5C87A' opacity='.4'/%3E%3Crect x='46' y='16' width='2' height='12' rx='1' fill='%23E5C87A'/%3E%3Ccircle cx='47' cy='15' r='2.5' fill='%23E5C87A'/%3E%3Ctext x='32' y='49' text-anchor='middle' font-family='serif' font-size='14' font-weight='700' fill='%23FFF'%3EAB%3C/text%3E%3C/svg%3E" />
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2A4A'/%3E%3Crect x='6' y='32' width='52' height='2' rx='1' fill='%23C8943C'/%3E%3Crect x='6' y='42' width='52' height='2' rx='1' fill='%23C8943C' opacity='.6'/%3E%3Crect x='6' y='52' width='30' height='2' rx='1' fill='%23C8943C' opacity='.3'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23C8943C'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23E5C87A' opacity='.4'/%3E%3Crect x='46' y='16' width='2' height='12' rx='1' fill='%23E5C87A'/%3E%3Ccircle cx='47' cy='15' r='2.5' fill='%23E5C87A'/%3E%3Ctext x='32' y='49' text-anchor='middle' font-family='serif' font-size='14' font-weight='700' fill='%23FFF'%3EAB%3C/text%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,11 +50,11 @@ html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);
 
 /* Module grid */
 .mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.mod-card{background:var(--sf);border-radius:var(--r);padding:18px 14px;text-align:center;cursor:pointer;box-shadow:var(--sh);transition:transform .15s;position:relative;overflow:hidden}
+.mod-desc{font-size:.66rem;color:var(--t2);line-height:1.3;word-break:break-word;overflow-wrap:break-word}
 .mod-card:active{transform:scale(.97)}
 .mod-icon{font-size:2rem;margin-bottom:8px}
-.mod-name{font-weight:700;font-size:.82rem;line-height:1.3;margin-bottom:4px}
-.mod-desc{font-size:.68rem;color:var(--t2);line-height:1.3}
+.mod-name{font-weight:700;font-size:.78rem;line-height:1.3;margin-bottom:4px;word-break:break-word;overflow-wrap:break-word;hyphens:auto}
+.mod-desc{font-size:.66rem;color:var(--t2);line-height:1.3;word-break:break-word;overflow-wrap:break-word}
 .mod-count{position:absolute;top:8px;right:10px;background:var(--pr);color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:8px}
 
 /* Content list */
