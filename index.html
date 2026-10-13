@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#1B2A4A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Academia Empresarial Bolivia</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2A4A'/%3E%3Crect x='6' y='32' width='52' height='2' rx='1' fill='%23C8943C'/%3E%3Crect x='6' y='42' width='52' height='2' rx='1' fill='%23C8943C' opacity='.6'/%3E%3Crect x='6' y='52' width='30' height='2' rx='1' fill='%23C8943C' opacity='.3'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23C8943C'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23E5C87A' opacity='.4'/%3E%3Crect x='46' y='16' width='2' height='12' rx='1' fill='%23E5C87A'/%3E%3Ccircle cx='47' cy='15' r='2.5' fill='%23E5C87A'/%3E%3Ctext x='32' y='49' text-anchor='middle' font-family='serif' font-size='14' font-weight='700' fill='%23FFF'%3EAB%3C/text%3E%3C/svg%3E" />
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2A4A'/%3E%3Crect x='6' y='32' width='52' height='2' rx='1' fill='%23C8943C'/%3E%3Crect x='6' y='42' width='52' height='2' rx='1' fill='%23C8943C' opacity='.6'/%3E%3Crect x='6' y='52' width='30' height='2' rx='1' fill='%23C8943C' opacity='.3'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23C8943C'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23E5C87A' opacity='.4'/%3E%3Crect x='46' y='16' width='2' height='12' rx='1' fill='%23E5C87A'/%3E%3Ccircle cx='47' cy='15' r='2.5' fill='%23E5C87A'/%3E%3Ctext x='32' y='49' text-anchor='middle' font-family='serif' font-size='14' font-weight='700' fill='%23FFF'%3EAB%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F3F0;--sf:#FFF;--pr:#1B2A4A;--pr-l:#2C4470;--ac:#C8943C;--ac-l:#E5C87A;--tx:#1A1A2E;--t2:#6B7280;--t3:#9CA3AF;--ok:#059669;--ok-bg:#ECFDF5;--wn:#D97706;--wn-bg:#FFFBEB;--er:#DC2626;--er-bg:#FEF2F2;--bd:#E5E7EB;--sh:0 2px 12px rgba(0,0,0,.06);--sh2:0 4px 20px rgba(0,0,0,.1);--r:16px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.dn{font-family:'Playfair Display',serif}.hidden{display:none!important}
+.load-screen{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px;text-align:center}
+.load-screen .icon{font-size:3rem;margin-bottom:12px}
+.load-screen .title{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--pr);font-weight:700;margin-bottom:4px}
+.load-screen .sub{color:var(--t2);font-size:.95rem;margin-bottom:20px}
+.load-screen .msg{color:var(--t2);font-size:.95rem;margin-bottom:8px}
+.load-screen .err{color:var(--er);font-size:.9rem;margin:12px 0}
+.btn{padding:14px 24px;border:none;border-radius:12px;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn:active{transform:scale(.98)}
+.btn-pr{background:var(--pr);color:#fff}
+.btn-ac{background:var(--ac);color:#fff}
+.btn-sm{padding:10px 18px;font-size:.85rem}
+.btn-ghost{background:transparent;color:var(--pr);border:2px solid var(--pr)}
+.app{display:none;min-height:100vh;padding-bottom:72px}
+.hdr{background:var(--pr);color:#fff;padding:18px 20px 14px;position:sticky;top:0;z-index:50}
+.hdr-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;letter-spacing:.5px}
+.hdr-sub{font-size:.78rem;opacity:.75;margin-top:2px}
+.hdr-back{display:flex;align-items:center;gap:10px}
+.hdr-back button{background:none;border:none;color:#fff;font-size:1.3rem;cursor:pointer;padding:4px}
+.main{padding:16px}
+.card{background:var(--sf);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--sh)}
+.section-title{font-size:.78rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:6px}
+.empty{text-align:center;padding:40px 20px;color:var(--t3)}
+.empty .icon{font-size:2.5rem;margin-bottom:10px}
+.empty .msg{font-size:.95rem}
+
+/* Search */
+.search-wrap{margin-bottom:16px}
+.search-input{width:100%;padding:14px 18px;border:2px solid var(--bd);border-radius:14px;font-size:.95rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--sf);transition:border-color .2s}
+.search-input:focus{border-color:var(--pr)}
+
+/* Module grid */
+.mod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.mod-card{background:var(--sf);border-radius:var(--r);padding:18px 14px;text-align:center;cursor:pointer;box-shadow:var(--sh);transition:transform .15s;position:relative;overflow:hidden}
+.mod-card:active{transform:scale(.97)}
+.mod-icon{font-size:2rem;margin-bottom:8px}
+.mod-name{font-weight:700;font-size:.82rem;line-height:1.3;margin-bottom:4px}
+.mod-desc{font-size:.68rem;color:var(--t2);line-height:1.3}
+.mod-count{position:absolute;top:8px;right:10px;background:var(--pr);color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:8px}
+
+/* Content list */
+.content-item{background:var(--sf);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;box-shadow:var(--sh);transition:transform .15s}
+.content-item:active{transform:scale(.98)}
+.ci-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:4px}
+.ci-title{font-weight:700;font-size:.92rem;flex:1}
+.ci-type{font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:8px;flex-shrink:0;text-transform:uppercase;letter-spacing:.3px}
+.type-leccion{background:#DBEAFE;color:#1E40AF}
+.type-comparacion{background:#FCE7F3;color:#9D174D}
+.type-explicacion{background:#D1FAE5;color:#065F46}
+.type-guia{background:#FEF3C7;color:#92400E}
+.type-nota{background:#E5E7EB;color:#374151}
+.type-procedimiento{background:#EDE9FE;color:#5B21B6}
+.type-obligacion{background:#FEE2E2;color:#991B1B}
+.type-caso{background:#CCFBF1;color:#134E4A}
+.type-glosario{background:#F3F4F6;color:#4B5563}
+.ci-summary{font-size:.82rem;color:var(--t2);line-height:1.4;margin-top:2px}
+.ci-meta{font-size:.72rem;color:var(--t3);margin-top:6px}
+
+/* Content detail */
+.detail-header{margin-bottom:16px}
+.detail-type{font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:8px;display:inline-block;margin-bottom:8px;text-transform:uppercase}
+.detail-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;line-height:1.2;margin-bottom:8px}
+.detail-body{line-height:1.7;font-size:.95rem}
+.detail-body h3{font-size:1.05rem;font-weight:700;color:var(--pr);margin:16px 0 8px}
+.detail-body p{margin-bottom:12px}
+.detail-body ol,.detail-body ul{margin:12px 0 12px 20px}
+.detail-body li{margin-bottom:6px}
+.detail-body strong{font-weight:700}
+.detail-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.tag{background:var(--bg);padding:4px 12px;border-radius:20px;font-size:.75rem;color:var(--t2);font-weight:500}
+.detail-actions{display:flex;gap:10px;margin-top:16px}
+.detail-fav{background:var(--sf);border:2px solid var(--bd);padding:10px 18px;border-radius:12px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+.detail-fav.on{background:var(--ac);border-color:var(--ac);color:#fff}
+
+/* Norms & sources */
+.norms-section{margin-top:16px}
+.norm-item{background:var(--bg);padding:12px 14px;border-radius:10px;margin-bottom:8px;font-size:.85rem;line-height:1.5}
+.norm-item a{color:var(--pr);font-weight:600;text-decoration:underline}
+.source-badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--ok-bg);color:var(--ok);margin-left:6px}
+
+/* Calculators */
+.calc-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px;scrollbar-width:none}
+.calc-tabs::-webkit-scrollbar{display:none}
+.calc-tab{flex-shrink:0;padding:10px 16px;border:1px solid var(--bd);border-radius:20px;background:var(--sf);font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.calc-tab.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.calc-form label{display:block;font-size:.82rem;font-weight:600;color:var(--t2);margin-bottom:4px;margin-top:12px}
+.calc-form input{width:100%;padding:12px;border:2px solid var(--bd);border-radius:10px;font-size:.95rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--bg)}
+.calc-form input:focus{border-color:var(--pr)}
+.calc-result{background:var(--ok-bg);padding:16px;border-radius:12px;margin-top:16px;text-align:center}
+.calc-result .value{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--ok)}
+.calc-result .label{font-size:.85rem;color:var(--t2);margin-top:4px}
+.calc-result .formula{font-size:.78rem;color:var(--t3);margin-top:8px;font-style:italic}
+
+/* Progress */
+.prog-bar{height:8px;background:var(--bd);border-radius:4px;overflow:hidden;margin:8px 0}
+.prog-fill{height:100%;border-radius:4px;background:var(--ok);transition:width .4s}
+.prog-module{margin-bottom:16px}
+.prog-module .pm-name{font-weight:700;font-size:.88rem;margin-bottom:2px;display:flex;justify-content:space-between}
+.prog-module .pm-pct{color:var(--ok);font-weight:700}
+
+/* Bnav */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);display:flex;justify-content:space-around;align-items:center;padding:6px 0 10px;box-shadow:0 -2px 16px rgba(0,0,0,.08);z-index:100;border-top:1px solid var(--bd)}
+.bnav-btn{display:flex;flex-direction:column;align-items:center;background:none;border:none;color:var(--t3);font-size:.62rem;cursor:pointer;padding:4px 8px;gap:2px;transition:color .2s}
+.bnav-btn.on{color:var(--pr)}
+.bnav-btn svg{width:22px;height:22px}
+
+/* Quick access */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.quick-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 6px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;cursor:pointer;font-size:.72rem;color:var(--tx);gap:4px;transition:all .2s;font-weight:600}
+.quick-btn:active{background:var(--ok-bg);border-color:var(--ok)}
+.quick-btn .qi{font-size:1.4rem}
+
+/* Filter chips */
+.filter-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px;scrollbar-width:none}
+.filter-chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:7px 14px;border:1px solid var(--bd);border-radius:20px;background:var(--sf);font-size:.78rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.chip.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+
+@media(max-width:380px){.mod-grid{grid-template-columns:1fr}.mod-name{font-size:.78rem}.detail-title{font-size:1.3rem}}
+</style>
+</head>
+<body>
+
+<div class="load-screen" id="loading">
+<div class="icon">🎓</div>
+<div class="title dn">Academia Empresarial</div>
+<div class="sub">Bolivia · Conocimiento empresarial</div>
+<div class="msg" id="loadMsg">Cargando contenido...</div>
+<div class="err hidden" id="loadErr"></div>
+<button class="btn btn-ac btn-sm hidden" id="retryBtn" onclick="init()">Reintentar</button>
+</div>
+
+<div class="app" id="app">
+<div class="hdr" id="appHdr"></div>
+<div class="main" id="main"></div>
+<div class="bnav">
+<button class="bnav-btn on" onclick="goView('home',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Inicio</button>
+<button class="bnav-btn" onclick="goView('search',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Buscar</button>
+<button class="bnav-btn" onclick="goView('calc',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>Calcular</button>
+<button class="bnav-btn" onclick="goView('fav',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Favoritos</button>
+<button class="bnav-btn" onclick="goView('progress',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Progreso</button>
+</div>
+</div>
+
+<script>
+var GAS_URL='https://script.google.com/macros/s/AKfycbzpi6pATvU4yeMlxG92cYmDxDJASLzjnJHvQ0CfQg-hY3XYgHGFPOKfrYdtP_6qGuq6BQ/exec';
+var DATA={modulos:[],contenidos:[],fuentes:[],procedimientos:[],obligaciones:[],casos:[],glosario:[],historial:[]};
+var FAV=JSON.parse(localStorage.getItem('acad_fav')||'[]');
+var PROG=JSON.parse(localStorage.getItem('acad_prog')||'{}');
+var V='home',currentModule='',currentContentId='',currentType='todo',searchQ='',calcTab='margen';
+
+var DEF_MODS=[
+{id:'mod01',nombre:'Constitución y Tipos de Empresa',icono:'🏛️',descripcion:'Derecho societario y formas empresariales',orden:1},
+{id:'mod02',nombre:'Contabilidad e Impuestos',icono:'📊',descripcion:'SIAT, facturación, declaraciones',orden:2},
+{id:'mod03',nombre:'Derecho Laboral',icono:'👥',descripcion:'Contratación, personal, liquidaciones',orden:3},
+{id:'mod04',nombre:'Contratos y Litigios',icono:'📝',descripcion:'Civiles, comerciales, reclamaciones',orden:4},
+{id:'mod05',nombre:'Finanzas Empresariales',icono:'💰',descripcion:'Bancos, préstamos, crédito',orden:5},
+{id:'mod06',nombre:'Compras y Ventas',icono:'🛒',descripcion:'Inventario, proveedores, importaciones',orden:6},
+{id:'mod07',nombre:'Obligaciones Administrativas',icono:'📋',descripcion:'Registros, licencias, cumplimiento',orden:7},
+{id:'mod08',nombre:'Protección Patrimonial',icono:'🛡️',descripcion:'Seguros, riesgos, responsabilidad',orden:8},
+{id:'mod09',nombre:'Gestión Documental',icono:'📁',descripcion:'Trámites, plazos, calendario',orden:9},
+{id:'mod10',nombre:'Casos y Evaluación',icono:'🎯',descripcion:'Ejercicios, glosario, evaluaciones',orden:10}
+];
+
+/* ===== INIT ===== */
+async function init(){
+  document.getElementById('loading').classList.remove('hidden');
+  document.getElementById('loadErr').classList.add('hidden');
+  document.getElementById('retryBtn').classList.add('hidden');
+  document.getElementById('loadMsg').textContent='Cargando contenido...';
+  try{
+    var r=await fetch(GAS_URL+'?action=getData');
+    var d=await r.json();
+    if(d.ok){DATA=d}
+    else{throw new Error(d.error||'Error')}
+  }catch(e){console.error(e)}
+  document.getElementById('loading').classList.add('hidden');
+  if(!DATA.modulos||!DATA.modulos.length)DATA.modulos=DEF_MODS.slice();
+  document.getElementById('app').style.display='block';
+  renderHeader('home');
+  renderHome();
+}
+
+/* ===== NAVIGATION ===== */
+function goView(v,btn){
+  document.querySelectorAll('.bnav-btn').forEach(function(el){el.classList.remove('on')});
+  if(btn)btn.classList.add('on');
+  V=v;
+  if(v==='home'){renderHeader('home');renderHome()}
+  else if(v==='search'){renderHeader('search');renderSearch()}
+  else if(v==='calc'){renderHeader('calc');renderCalc()}
+  else if(v==='fav'){renderHeader('fav');renderFav()}
+  else if(v==='progress'){renderHeader('progress');renderProgress()}
+}
+
+function goBack(){
+  if(V==='content'){renderHeader('module');renderModule(currentModule)}
+  else if(V==='module'){renderHeader('home');renderHome()}
+  else{renderHeader('home');renderHome()}
+  var btns=document.querySelectorAll('.bnav-btn');
+  if(V==='home')btns[0].classList.add('on');
+}
+
+function renderHeader(view){
+  var h='';
+  if(view==='home')h='<div class="hdr-title dn">🎓 Academia Empresarial</div><div class="hdr-sub">Bolivia · Conocimiento empresarial</div>';
+  else if(view==='module'){var m=DATA.modulos.find(function(x){return x.id===currentModule});h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">'+(m?m.icono+' '+m.nombre:'Módulo')+'</div><div class="hdr-sub">'+(m?m.descripcion:'')+'</div></div></div>'}
+  else if(view==='content'){h='<div class="hdr-back"><button onclick="goBack()">←</button><div><div class="hdr-title dn">Contenido</div></div></div>'}
+  else if(view==='search')h='<div class="hdr-title dn">🔍 Buscar</div><div class="hdr-sub">Encuentra temas, normas y procedimientos</div>';
+  else if(view==='calc')h='<div class="hdr-title dn">📐 Calculadoras</div><div class="hdr-sub">Herramientas financieras</div>';
+  else if(view==='fav')h='<div class="hdr-title dn">⭐ Favoritos</div><div class="hdr-sub">Tu contenido guardado</div>';
+  else if(view==='progress')h='<div class="hdr-title dn">📈 Progreso</div><div class="hdr-sub">Tu avance de aprendizaje</div>';
+  document.getElementById('appHdr').innerHTML=h;
+}
+
+/* ===== HOME ===== */
+function renderHome(){
+  var h='';
+  h+='<div class="search-wrap"><input class="search-input" placeholder="🔍 Buscar temas, normas, procedimientos..." onkeyup="if(event.key===\'Enter\'){searchQ=this.value;goView(\'search\');setTimeout(function(){document.getElementById(\'searchInput\').value=searchQ;doSearch(searchQ)},50)}"></div>';
+  h+='<div class="section-title">Acceso rápido</div>';
+  h+='<div class="quick-grid">';
+  h+='<div class="quick-btn" onclick="goView(\'calc\')"><span class="qi">📐</span>Calculadoras</div>';
+  h+='<div class="quick-btn" onclick="renderGlosario()"><span class="qi">📖</span>Glosario</div>';
+  h+='<div class="quick-btn" onclick="renderCasosList()"><span class="qi">🎯</span>Casos</div>';
+  h+='</div>';
+  h+='<div class="section-title">Módulos de aprendizaje</div>';
+  h+='<div class="mod-grid">';
+  DATA.modulos.forEach(function(m){
+    var count=getModuleContentCount(m.id);
+    h+='<div class="mod-card" onclick="openModule(\''+m.id+'\')">';
+    if(count>0)h+='<div class="mod-count">'+count+'</div>';
+    h+='<div class="mod-icon">'+m.icono+'</div>';
+    h+='<div class="mod-name">'+esc(m.nombre)+'</div>';
+    h+='<div class="mod-desc">'+esc(m.descripcion)+'</div>';
+    h+='</div>';
+  });
+  h+='</div>';
+  document.getElementById('main').innerHTML=h;
+}
+
+function getModuleContentCount(modId){
+  var c=0;
+  DATA.contenidos.forEach(function(x){if(x.moduloId===modId&&x.estado!=='borrador')c++});
+  DATA.procedimientos.forEach(function(x){if(x.moduloId===modId)c++});
+  DATA.obligaciones.forEach(function(x){if(x.moduloId===modId)c++});
+  DATA.casos.forEach(function(x){if(x.moduloId===modId)c++});
+  return c;
+}
+
+/* ===== MODULE ===== */
+function openModule(modId){
+  currentModule=modId;currentType='todo';V='module';
+  renderHeader('module');renderModule(modId);
+}
+
+function renderModule(modId){
+  var h='';
+  h+='<div class="filter-chips">';
+  var types=[{id:'todo',l:'Todo'},{id:'leccion',l:'Lecciones'},{id:'comparacion',l:'Comparaciones'},{id:'explicacion',l:'Explicaciones'},{id:'guia',l:'Guías'},{id:'nota',l:'Notas'},{id:'procedimiento',l:'Procedimientos'},{id:'obligacion',l:'Obligaciones'},{id:'caso',l:'Casos'}];
+  types.forEach(function(t){
+    h+='<button class="chip'+(currentType===t.id?' on':'')+'" onclick="filterType(\''+t.id+'\')">'+t.l+'</button>';
+  });
+  h+='</div>';
+  var items=getModuleItems(modId,currentType);
+  if(!items.length)h+='<div class="empty"><div class="icon">📭</div><div class="msg">Sin contenido disponible todavía.<br>Agrega contenido desde Google Sheets.</div></div>';
+  else items.forEach(function(it){h+=contentCardHTML(it)});
+  document.getElementById('main').innerHTML=h;
+}
+
+function filterType(t){currentType=t;renderModule(currentModule)}
+
+function getModuleItems(modId,type){
+  var items=[];
+  if(type==='todo'||!type){
+    DATA.contenidos.forEach(function(x){if(x.moduloId===modId&&x.estado!=='borrador')items.push({...x,_type:'contenido'})});
+    DATA.procedimientos.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'procedimiento',titulo:x.titulo,resumen:x.resumen,tipo:'procedimiento',id:x.id})});
+    DATA.obligaciones.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'obligacion',titulo:x.titulo,resumen:x.descripcion,tipo:'obligacion',id:x.id})});
+    DATA.casos.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'caso',titulo:x.titulo,resumen:x.descripcion,tipo:'caso',id:x.id})});
+  } else if(type==='procedimiento'){DATA.procedimientos.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'procedimiento',titulo:x.titulo,resumen:x.resumen,tipo:'procedimiento',id:x.id})})}
+  else if(type==='obligacion'){DATA.obligaciones.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'obligacion',titulo:x.titulo,resumen:x.descripcion,tipo:'obligacion',id:x.id})})}
+  else if(type==='caso'){DATA.casos.forEach(function(x){if(x.moduloId===modId)items.push({...x,_type:'caso',titulo:x.titulo,resumen:x.descripcion,tipo:'caso',id:x.id})})}
+  else{DATA.contenidos.forEach(function(x){if(x.moduloId===modId&&x.tipo===type&&x.estado!=='borrador')items.push({...x,_type:'contenido'})})}
+  return items;
+}
+
+function contentCardHTML(it){
+  var typeBadge=it._type||it.tipo||'nota';
+  var typeLabels={leccion:'Lección',comparacion:'Comparación',explicacion:'Explicación',guia:'Guía',nota:'Nota',procedimiento:'Procedimiento',obligacion:'Obligación',caso:'Caso'};
+  return '<div class="content-item" onclick="openContent(\''+it.id+'\',\''+it._type+'\')">'+
+    '<div class="ci-header"><div class="ci-title">'+esc(it.titulo)+'</div>'+
+    '<div class="ci-type type-'+typeBadge+'">'+(typeLabels[typeBadge]||typeBadge)+'</div></div>'+
+    '<div class="ci-summary">'+esc(it.resumen||'').substring(0,120)+(it.resumen&&it.resumen.length>120?'...':'')+'</div>'+
+    (it.fechaActualizacion?'<div class="ci-meta">Actualizado: '+esc(it.fechaActualizacion)+'</div>':'')+
+  '</div>';
+}
+
+/* ===== CONTENT DETAIL ===== */
+function openContent(id,type){
+  currentContentId=id;V='content';
+  renderHeader('content');
+  renderContent(id,type);
+}
+
+function renderContent(id,type){
+  var item=null,h='';
+  if(type==='procedimiento'){item=DATA.procedimientos.find(function(x){return x.id===id})}
+  else if(type==='obligacion'){item=DATA.obligaciones.find(function(x){return x.id===id})}
+  else if(type==='caso'){item=DATA.casos.find(function(x){return x.id===id})}
+  else{item=DATA.contenidos.find(function(x){return x.id===id})}
+  if(!item){h='<div class="empty"><div class="icon">❓</div><div class="msg">Contenido no encontrado</div></div>';document.getElementById('main').innerHTML=h;return}
+  var typeLabels={leccion:'Lección',comparacion:'Comparación',explicacion:'Explicación',guia:'Guía',nota:'Nota',procedimiento:'Procedimiento',obligacion:'Obligación',caso:'Caso'};
+  var typeBadge=item._type||item.tipo||'nota';
+  h+='<div class="detail-header">';
+  h+='<div class="detail-type type-'+typeBadge+'">'+(typeLabels[typeBadge]||typeBadge)+'</div>';
+  h+='<div class="detail-title">'+esc(item.titulo)+'</div>';
+  h+='</div>';
+  h+='<div class="card">';
+  if(item.contenido)h+='<div class="detail-body">'+item.contenido+'</div>';
+  else if(item.descripcion)h+='<div class="detail-body">'+item.descripcion+'</div>';
+  if(item.pasos){
+    var steps=item.pasos.split('\n').filter(function(s){return s.trim()});
+    h+='<h3 style="font-size:1.05rem;font-weight:700;color:var(--pr);margin:16px 0 8px">Pasos a seguir</h3><ol>';
+    steps.forEach(function(s){h+='<li>'+esc(s)+'</li>'});
+    h+='</ol>';
+  }
+  if(item.solucion)h+='<h3 style="font-size:1.05rem;font-weight:700;color:var(--ok);margin:16px 0 8px">Solución</h3><div>'+item.solucion+'</div>';
+  h+='</div>';
+  if(item.documentos)h+='<div class="card"><div class="section-title">📄 Documentos necesarios</div><div>'+item.documentos.replace(/\n/g,'<br>')+'</div></div>';
+  if(item.institucion||item.plataforma)h+='<div class="card"><div class="section-title">🏛️ Institución</div><div>'+esc(item.institucion||'')+(item.plataforma?' · '+esc(item.plataforma):'')+'</div></div>';
+  if(item.plazo||item.periodicidad){
+    h+='<div class="card"><div class="section-title">⏰ Plazos</div>';
+    if(item.plazo)h+='<div>Plazo: <strong>'+esc(item.plazo)+'</strong></div>';
+    if(item.periodicidad)h+='<div>Periodicidad: <strong>'+esc(item.periodicidad)+'</strong></div>';
+    h+='</div>';
+  }
+  if(item.normas)h+='<div class="card norms-section"><div class="section-title">📚 Normas relacionadas</div><div class="norm-item">'+item.normas.replace(/\n/g,'<br>')+'</div></div>';
+  if(item.norma)h+='<div class="card norms-section"><div class="section-title">📚 Norma</div><div class="norm-item">'+item.norma.replace(/\n/g,'<br>')+'</div></div>';
+  if(item.consecuencias)h+='<div class="card"><div class="section-title">⚠️ Consecuencias</div><div>'+item.consecuencias.replace(/\n/g,'<br>')+'</div></div>';
+  if(item.tags){
+    var tags=item.tags.split(',').filter(function(t){return t.trim()});
+    if(tags.length){h+='<div class="detail-tags">';tags.forEach(function(t){h+='<div class="tag">'+esc(t.trim())+'</div>'});h+='</div>'}
+  }
+  h+='<div class="detail-actions">';
+  h+='<button class="detail-fav'+(isFav(id)?' on':'')+'" onclick="toggleFav(\''+id+'\')">'+(isFav(id)?'⭐ Guardado':'☆ Guardar')+'</button>';
+  h+='<button class="detail-fav" onclick="markRead(\''+id+'\')">✓ Marcar como estudiado</button>';
+  h+='</div>';
+  document.getElementById('main').innerHTML=h;
+}
+
+/* ===== SEARCH ===== */
+function renderSearch(){
+  var h='';
+  h+='<div class="search-wrap"><input class="search-input" id="searchInput" placeholder="🔍 Buscar..." value="'+esc(searchQ)+'" oninput="searchQ=this.value;doSearch(this.value)"></div>';
+  h+='<div id="searchResults"></div>';
+  document.getElementById('main').innerHTML=h;
+  if(searchQ)doSearch(searchQ);
+}
+
+function doSearch(q){
+  var el=document.getElementById('searchResults');
+  if(!el)return;
+  if(!q||q.length<2){el.innerHTML='<div class="empty"><div class="icon">🔍</div><div class="msg">Escribe al menos 2 letras para buscar</div></div>';return}
+  var ql=q.toLowerCase();
+  var results=[];
+  DATA.contenidos.forEach(function(x){if((x.titulo+x.resumen+x.contenido+x.tags+x.normas).toLowerCase().indexOf(ql)>=0)results.push({...x,_type:'contenido'})});
+  DATA.procedimientos.forEach(function(x){if((x.titulo+x.resumen+x.pasos+x.tags).toLowerCase().indexOf(ql)>=0)results.push({...x,_type:'procedimiento',titulo:x.titulo,resumen:x.resumen,tipo:'procedimiento',id:x.id})});
+  DATA.obligaciones.forEach(function(x){if((x.titulo+x.descripcion+x.sujeto+x.norma).toLowerCase().indexOf(ql)>=0)results.push({...x,_type:'obligacion',titulo:x.titulo,resumen:x.descripcion,tipo:'obligacion',id:x.id})});
+  DATA.casos.forEach(function(x){if((x.titulo+x.descripcion+x.solucion).toLowerCase().indexOf(ql)>=0)results.push({...x,_type:'caso',titulo:x.titulo,resumen:x.descripcion,tipo:'caso',id:x.id})});
+  DATA.glosario.forEach(function(x){if((x.termino+x.definicion).toLowerCase().indexOf(ql)>=0)results.push({...x,_type:'glosario',titulo:x.termino,resumen:x.definicion,tipo:'glosario',id:x.id})});
+  if(!results.length){el.innerHTML='<div class="empty"><div class="icon">😔</div><div class="msg">Sin resultados para "'+esc(q)+'"</div></div>';return}
+  el.innerHTML='<div class="section-title">'+results.length+' resultado(s)</div>'+results.map(function(r){return contentCardHTML(r)}).join('');
+}
+
+/* ===== GLOSARIO ===== */
+function renderGlosario(){
+  V='glosario';renderHeader('search');
+  var h='<div class="hist-back" style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button onclick="goView(\'home\')" style="background:none;border:none;font-size:1.2rem;cursor:pointer">←</button><div style="font-weight:700;font-size:1.15rem">📖 Glosario</div></div>';
+  if(!DATA.glosario.length)h+='<div class="empty"><div class="icon">📖</div><div class="msg">Sin términos en el glosario</div></div>';
+  else{
+    var sorted=DATA.glosario.slice().sort(function(a,b){return a.termino.localeCompare(b.termino)});
+    sorted.forEach(function(g){
+      h+='<div class="card"><div style="font-weight:700;font-size:.95rem;color:var(--pr);margin-bottom:4px">'+esc(g.termino)+'</div><div style="font-size:.88rem;color:var(--t2);line-height:1.5">'+esc(g.definicion)+'</div>'+(g.categoria?'<div style="font-size:.72rem;color:var(--t3);margin-top:6px">'+esc(g.categoria)+'</div>':'')+'</div>';
+    });
+  }
+  document.getElementById('main').innerHTML=h;
+}
+
+/* ===== CASOS LIST ===== */
+function renderCasosList(){
+  V='casos';renderHeader('search');
+  var h='<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><button onclick="goView(\'home\')" style="background:none;border:none;font-size:1.2rem;cursor:pointer">←</button><div style="font-weight:700;font-size:1.15rem">🎯 Casos Prácticos</div></div>';
+  if(!DATA.casos.length)h+='<div class="empty"><div class="icon">🎯</div><div class="msg">Sin casos prácticos todavía</div></div>';
+  else DATA.casos.forEach(function(c){h+=contentCardHTML({...c,_type:'caso',titulo:c.titulo,resumen:c.descripcion,tipo:'caso',id:c.id})});
+  document.getElementById('main').innerHTML=h;
+}
+
+/* ===== CALCULATORS ===== */
+function renderCalc(){
+  var h='';
+  h+='<div class="calc-tabs">';
+  var tabs=[{id:'margen',l:'Margen Bruto'},{id:'equilibrio',l:'Pto. Equilibrio'},{id:'capital',l:'Capital Trabajo'},{id:'prestamo',l:'Préstamo'},{id:'rentabilidad',l:'Rentabilidad'},{id:'endeudamiento',l:'Endeudamiento'}];
+  tabs.forEach(function(t){h+='<button class="calc-tab'+(calcTab===t.id?' on':'')+'" onclick="switchCalc(\''+t.id+'\')">'+t.l+'</button>'});
+  h+='</div>';
+  h+='<div class="card"><div id="calcForm"></div></div>';
+  h+='<div id="calcResult"></div>';
+  document.getElementById('main').innerHTML=h;
+  renderCalcForm();
+}
+
+function switchCalc(t){calcTab=t;renderCalc()}
+
+function renderCalcForm(){
+  var el=document.getElementById('calcForm');if(!el)return;
+  var h='';
+  if(calcTab==='margen'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Margen Bruto</div>';
+    h+='<div class="calc-form"><label>Ingresos por ventas ($)</label><input type="number" id="c_in" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Costo de ventas ($)</label><input type="number" id="c_co" inputmode="decimal" placeholder="0.00"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'margen\')">Calcular</button>';
+  } else if(calcTab==='equilibrio'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Punto de Equilibrio</div>';
+    h+='<div class="calc-form"><label>Costos fijos ($)</label><input type="number" id="c_cf" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Precio unitario ($)</label><input type="number" id="c_pu" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Costo variable unitario ($)</label><input type="number" id="c_cv" inputmode="decimal" placeholder="0.00"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'equilibrio\')">Calcular</button>';
+  } else if(calcTab==='capital'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Capital de Trabajo</div>';
+    h+='<div class="calc-form"><label>Activo corriente ($)</label><input type="number" id="c_ac" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Pasivo corriente ($)</label><input type="number" id="c_pc" inputmode="decimal" placeholder="0.00"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'capital\')">Calcular</button>';
+  } else if(calcTab==='prestamo'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Cuota de Préstamo</div>';
+    h+='<div class="calc-form"><label>Monto del préstamo ($)</label><input type="number" id="c_mo" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Tasa de interés anual (%)</label><input type="number" id="c_ta" inputmode="decimal" placeholder="0.00" step="0.01">';
+    h+='<label>Plazo (meses)</label><input type="number" id="c_me" inputmode="numeric" placeholder="0"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'prestamo\')">Calcular</button>';
+  } else if(calcTab==='rentabilidad'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Rentabilidad</div>';
+    h+='<div class="calc-form"><label>Ganancia neta ($)</label><input type="number" id="c_gn" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Inversión total ($)</label><input type="number" id="c_it" inputmode="decimal" placeholder="0.00"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'rentabilidad\')">Calcular</button>';
+  } else if(calcTab==='endeudamiento'){
+    h+='<div style="font-weight:700;font-size:1rem;margin-bottom:8px">Índice de Endeudamiento</div>';
+    h+='<div class="calc-form"><label>Deuda total ($)</label><input type="number" id="c_dt" inputmode="decimal" placeholder="0.00">';
+    h+='<label>Patrimonio total ($)</label><input type="number" id="c_pt" inputmode="decimal" placeholder="0.00"></div>';
+    h+='<div style="height:14px"></div><button class="btn btn-pr" onclick="doCalc(\'endeudamiento\')">Calcular</button>';
+  }
+  el.innerHTML=h;
+}
+
+function doCalc(type){
+  var el=document.getElementById('calcResult');if(!el)return;
+  var h='';
+  if(type==='margen'){
+    var ingresos=parseFloat(document.getElementById('c_in').value)||0;
+    var costo=parseFloat(document.getElementById('c_co').value)||0;
+    if(!ingresos){h='<div class="empty"><div class="msg">Ingresa los ingresos</div></div>';el.innerHTML=h;return}
+    var margen=((ingresos-costo)/ingresos*100);
+    h='<div class="calc-result"><div class="label">Margen Bruto</div><div class="value">'+margen.toFixed(2)+'%</div><div class="formula">Fórmula: (Ingresos − Costo) / Ingresos × 100<br>Ingresos: $'+ingresos.toFixed(2)+' · Costo: $'+costo.toFixed(2)+' · Utilidad: $'+(ingresos-costo).toFixed(2)+'</div></div>';
+  } else if(type==='equilibrio'){
+    var cf=parseFloat(document.getElementById('c_cf').value)||0;
+    var pu=parseFloat(document.getElementById('c_pu').value)||0;
+    var cv=parseFloat(document.getElementById('c_cv').value)||0;
+    if(pu-cv<=0){h='<div class="empty"><div class="msg">El precio debe ser mayor al costo variable</div></div>';el.innerHTML=h;return}
+    var unidades=cf/(pu-cv);
+    var ingresos=unidades*pu;
+    h='<div class="calc-result"><div class="label">Punto de Equilibrio</div><div class="value">'+Math.ceil(unidades)+' unidades</div><div class="formula">Fórmula: Costos fijos / (Precio − Costo variable)<br>$'+cf.toFixed(2)+' / ($'+pu.toFixed(2)+' − $'+cv.toFixed(2)+') = '+unidades.toFixed(2)+' unidades<br>Ingresos necesarios: $'+ingresos.toFixed(2)+'</div></div>';
+  } else if(type==='capital'){
+    var ac=parseFloat(document.getElementById('c_ac').value)||0;
+    var pc=parseFloat(document.getElementById('c_pc').value)||0;
+    var ct=ac-pc;
+    h='<div class="calc-result"><div class="label">Capital de Trabajo</div><div class="value" style="color:'+(ct>=0?'var(--ok)':'var(--er)')+'">$'+ct.toFixed(2)+'</div><div class="formula">Fórmula: Activo corriente − Pasivo corriente<br>$'+ac.toFixed(2)+' − $'+pc.toFixed(2)+' = $'+ct.toFixed(2)+(ct>=0?' (sano)':' (riesgo)')+'</div></div>';
+  } else if(type==='prestamo'){
+    var mo=parseFloat(document.getElementById('c_mo').value)||0;
+    var ta=parseFloat(document.getElementById('c_ta').value)||0;
+    var me=parseInt(document.getElementById('c_me').value)||0;
+    if(!mo||!me){h='<div class="empty"><div class="msg">Completa todos los campos</div></div>';el.innerHTML=h;return}
+    var i=ta/12/100;
+    var cuota=i>0?mo*(i/(1-Math.pow(1+i,-me))):mo/me;
+    var total=cuota*me;
+    h='<div class="calc-result"><div class="label">Cuota mensual</div><div class="value">$'+cuota.toFixed(2)+'</div><div class="formula">Fórmula: M × (i / (1 − (1+i)⁻ⁿ))<br>Tasa mensual: '+(ta/12).toFixed(4)+'%<br>Total a pagar: $'+total.toFixed(2)+' · Intereses: $'+(total-mo).toFixed(2)+'</div></div>';
+  } else if(type==='rentabilidad'){
+    var gn=parseFloat(document.getElementById('c_gn').value)||0;
+    var it=parseFloat(document.getElementById('c_it').value)||0;
+    if(!it){h='<div class="empty"><div class="msg">Ingresa la inversión</div></div>';el.innerHTML=h;return}
+    var rent=gn/it*100;
+    h='<div class="calc-result"><div class="label">Rentabilidad</div><div class="value" style="color:'+(rent>=0?'var(--ok)':'var(--er)')+'">'+rent.toFixed(2)+'%</div><div class="formula">Fórmula: Ganancia / Inversión × 100<br>$'+gn.toFixed(2)+' / $'+it.toFixed(2)+' = '+rent.toFixed(2)+'%</div></div>';
+  } else if(type==='endeudamiento'){
+    var dt=parseFloat(document.getElementById('c_dt').value)||0;
+    var pt=parseFloat(document.getElementById('c_pt').value)||0;
+    if(!pt){h='<div class="empty"><div class="msg">Ingresa el patrimonio</div></div>';el.innerHTML=h;return}
+    var end=dt/pt*100;
+    var msg=end<=100?'Saludable':end<=200?'Moderado':'Alto riesgo';
+    h='<div class="calc-result"><div class="label">Endeudamiento</div><div class="value" style="color:'+(end<=100?'var(--ok)':end<=200?'var(--wn)':'var(--er)')+'">'+end.toFixed(2)+'%</div><div class="formula">Fórmula: Deuda / Patrimonio × 100<br>$'+dt.toFixed(2)+' / $'+pt.toFixed(2)+' = '+end.toFixed(2)+'% ('+msg+')</div></div>';
+  }
+  el.innerHTML=h;
+}
+
+/* ===== FAVORITES ===== */
+function isFav(id){return FAV.indexOf(id)>=0}
+function toggleFav(id){
+  var i=FAV.indexOf(id);
+  if(i>=0)FAV.splice(i,1);else FAV.push(id);
+  localStorage.setItem('acad_fav',JSON.stringify(FAV));
+  if(V==='content')renderContent(currentContentId,'');
+  else if(V==='fav')renderFav();
+}
+
+function renderFav(){
+  var h='';
+  if(!FAV.length){h='<div class="empty"><div class="icon">⭐</div><div class="msg">Sin favoritos todavía.<br>Guarda contenido desde cualquier ficha.</div></div>';document.getElementById('main').innerHTML=h;return}
+  FAV.forEach(function(id){
+    var item=DATA.contenidos.find(function(x){return x.id===id});
+    if(!item)item=DATA.procedimientos.find(function(x){return x.id===id});
+    if(!item)item=DATA.obligaciones.find(function(x){return x.id===id});
+    if(!item)item=DATA.casos.find(function(x){return x.id===id});
+    if(!item)item=DATA.glosario.find(function(x){return x.id===id});
+    if(item)h+=contentCardHTML({...item,_type:item.tipo||item._type||'nota',id:item.id,titulo:item.titulo,resumen:item.resumen||item.descripcion||item.definicion||''});
+  });
+  document.getElementById('main').innerHTML=h;
+}
+
+/* ===== PROGRESS ===== */
+function markRead(id){PROG[id]=true;localStorage.setItem('acad_prog',JSON.stringify(PROG));var el=document.querySelector('.detail-fav:last-child');if(el){el.textContent='✓ Estudiado';el.style.background='var(--ok-bg)';el.style.borderColor='var(--ok)';el.style.color='var(--ok)'}}
+
+function renderProgress(){
+  var total=getAllContentCount();
+  var read=Object.keys(PROG).length;
+  var pct=total>0?Math.round(read/total*100):0;
+  var h='';
+  h+='<div class="card" style="text-align:center"><div style="font-size:.85rem;color:var(--t2);margin-bottom:4px">Progreso general</div><div class="dn" style="font-size:2.5rem;font-weight:700;color:var(--pr)">'+pct+'%</div><div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div><div style="font-size:.82rem;color:var(--t2)">'+read+' de '+total+' contenidos estudiados</div></div>';
+  h+='<div class="section-title">Por módulo</div>';
+  DATA.modulos.forEach(function(m){
+    var mTotal=getModuleContentCount(m.id);
+    var mRead=0;
+    var items=getModuleItems(m.id,'todo');
+    items.forEach(function(it){if(PROG[it.id])mRead++});
+    var mPct=mTotal>0?Math.round(mRead/mTotal*100):0;
+    h+='<div class="card prog-module"><div class="pm-name"><span>'+m.icono+' '+esc(m.nombre)+'</span><span class="pm-pct">'+mPct+'%</span></div><div class="prog-bar"><div class="prog-fill" style="width:'+mPct+'%;background:'+(mPct>=80?'var(--ok)':mPct>=40?'var(--wn)':'var(--er)')+'"></div></div><div style="font-size:.75rem;color:var(--t3)">'+mRead+'/'+mTotal+' estudiados</div></div>';
+  });
+  document.getElementById('main').innerHTML=h;
+}
+
+function getAllContentCount(){
+  var c=0;
+  DATA.contenidos.forEach(function(x){if(x.estado!=='borrador')c++});
+  c+=DATA.procedimientos.length+DATA.obligaciones.length+DATA.casos.length;
+  return c;
+}
+
+/* ===== UTILITIES ===== */
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+document.addEventListener('DOMContentLoaded',function(){init()});
+</script>
+</body>
+</html>
