@@ -51,12 +51,11 @@ html,body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);
 
 /* Module grid */
 .mod-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-bottom:16px}
-.mod-card{background:linear-gradient(145deg,#0D2B1A,#1B4D32)!important;border-radius:18px;padding:22px 16px;width:170px;text-align:center;cursor:pointer;box-shadow:0 8px 28px rgba(13,43,26,.5),0 2px 8px rgba(0,0,0,.3)!important;transition:transform .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:130px;position:relative}
+.mod-card{background:linear-gradient(145deg,#0D2B1A,#1B4D32)!important;border-radius:18px;padding:18px 12px;width:calc(50% - 8px);text-align:center;cursor:pointer;box-shadow:0 6px 20px rgba(13,43,26,.4),0 2px 6px rgba(0,0,0,.2)!important;border:1.5px solid rgba(126,204,158,.35);transition:transform .2s;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;min-height:140px;height:auto;position:relative;overflow:hidden}
 .mod-card:active{transform:scale(.96)}
-.mod-name{font-family:'Playfair Display',serif;font-size:1.05rem!important;font-weight:700;color:#FFFFFF!important;line-height:1.25;word-break:break-word;overflow-wrap:break-word;margin:0!important;padding:0!important}
-.mod-desc{font-size:.78rem!important;color:#7ECC9E!important;font-weight:500;line-height:1.3;letter-spacing:.3px;opacity:1!important;margin:0!important;padding:0!important}
-.mod-icon{font-size:2.2rem!important;margin:0!important;padding:0!important}
-.mod-count{position:absolute;top:8px;right:10px;background:#7ECC9E;color:#0D2B1A;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:8px}
+.mod-name{font-family:'Playfair Display',serif;font-size:1rem!important;font-weight:700;color:#FFFFFF!important;line-height:1.2;margin:0!important;padding:0!important;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+.mod-desc{font-size:.75rem!important;color:#A8E6C1!important;font-weight:500;line-height:1.3;letter-spacing:.3px;margin:0!important;padding:0!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}
+.mod-icon{font-size:2rem!important;margin:0!important;padding:0!important;line-height:1}
 
 /* Content list */
 .content-item{background:var(--sf);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;box-shadow:var(--sh);transition:transform .15s}
@@ -263,9 +262,7 @@ function renderHome(){
   h+='<div class="section-title">Módulos de aprendizaje</div>';
   h+='<div class="mod-grid">';
   DATA.modulos.forEach(function(m){
-    var count=getModuleContentCount(m.id);
     h+='<div class="mod-card" onclick="openModule(\''+m.id+'\')">';
-    if(count>0)h+='<div class="mod-count">'+count+'</div>';
     h+='<div class="mod-icon">'+m.icono+'</div>';
     h+='<div class="mod-name">'+esc(m.nombre)+'</div>';
     h+='<div class="mod-desc">'+esc(m.descripcion)+'</div>';
