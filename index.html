@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Academia Empresarial Bolivia</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<!--
+=== GOOGLE APPS SCRIPT ===
+Para conectar con Google Sheets:
+1. Abre tu Google Sheet con la pestana "RUTA_ESTUDIO"
+2. Ve a Extensiones > Apps Script
+3. Borra todo el codigo y pega esto:
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('RUTA_ESTUDIO');
+  var data = sheet.getDataRange().getValues();
+  var headers = data[0];
+  var rows = [];
+  for (var i = 1; i < data.length; i++) {
+    var row = {};
+    for (var j = 0; j < headers.length; j++) {
+      row[headers[j]] = data[i][j];
+    }
+    rows.push(row);
+  }
+  return ContentService.createTextOutput(JSON.stringify({ok:true, rows:rows}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+4. Guarda > Implementar > Nueva implementacion > Aplicacion web
+5. Ejecutar como: Yo | Acceso: Cualquier usuario
+6. Copia la URL y pegala en GAS_URL abajo
+7. Cambia USE_DEMO a false
+-->
+<style>
+:root{--bg:#F7F5F2;--card:#FFF;--pri:#1B2A4A;--ac:#C8943C;--tx:#1A1A2E;--t2:#6B7280;--t3:#9CA3AF;--bd:#E5E7EB;--ok:#059669;--sh:0 2px 8px rgba(0,0,0,.06);--r:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+#loading{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:12px;text-align:center;padding:24px}
+#loading .icon{font-size:3rem}
+#loading h1{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--pri)}
+#loading p{color:var(--t2)}
+#app{display:none;min-height:100vh}
+#hdr{background:var(--pri);color:#fff;padding:20px 16px 16px;position:sticky;top:0;z-index:50}
+.hdr-title{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700}
+.hdr-sub{font-size:.82rem;opacity:.75;margin-top:4px}
+.hdr-back{display:flex;align-items:center;gap:10px}
+.hdr-btn{background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;padding:2px 8px}
+#main{padding:16px;padding-bottom:32px}
+.area-card{background:var(--pri);border-radius:var(--r);padding:18px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;margin-bottom:10px;color:#fff}
+.area-card:active{transform:scale(.98)}
+.area-icon{font-size:2rem;flex-shrink:0}
+.area-info{flex:1}
+.area-name{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;line-height:1.3}
+.area-count{font-size:.8rem;opacity:.7;margin-top:2px}
+.area-arrow{font-size:1.3rem;opacity:.6;flex-shrink:0}
+.lesson-card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:10px;box-shadow:var(--sh);cursor:pointer}
+.lesson-card:active{transform:scale(.99)}
+.lesson-hd{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.lesson-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--pri);color:#fff;font-size:.75rem;font-weight:700;flex-shrink:0}
+.lesson-title{font-weight:700;font-size:.95rem;line-height:1.3;flex:1}
+.lesson-obj{font-size:.82rem;color:var(--t2);line-height:1.5}
+.lesson-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag{display:inline-block;font-size:.7rem;padding:3px 10px;border-radius:20px;background:var(--bg);color:var(--t2);font-weight:500}
+.detail-section{background:var(--card);border-radius:var(--r);padding:18px;margin-bottom:12px;box-shadow:var(--sh)}
+.detail-label{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t2);margin-bottom:8px}
+.detail-value{font-size:.95rem;line-height:1.6}
+.detail-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;line-height:1.25;margin-bottom:12px}
+.detail-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.meta-tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;background:var(--card);color:var(--t2);border:1px solid var(--bd)}
+.btn-main{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--pri);color:#fff;border:none;padding:14px 24px;border-radius:var(--r);font-size:.95rem;font-weight:700;cursor:pointer;width:100%;text-decoration:none;margin-top:8px}
+.btn-main:active{transform:scale(.98)}
+.btn-alt{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--card);color:var(--pri);border:2px solid var(--pri);padding:12px 24px;border-radius:var(--r);font-size:.95rem;font-weight:700;cursor:pointer;width:100%}
+.search-input{width:100%;padding:14px 18px;border:2px solid var(--bd);border-radius:var(--r);font-size:.95rem;font-family:'DM Sans',sans-serif;outline:none;background:var(--card);margin-bottom:16px}
+.search-input:focus{border-color:var(--pri)}
+.section-title{font-size:.78rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;margin-top:8px}
+.empty-state{text-align:center;padding:48px 24px;color:var(--t3)}
+.empty-state .icon{font-size:2.5rem;margin-bottom:12px}
+.empty-state .msg{font-size:.95rem;line-height:1.5}
+.error-state{background:#FEF2F2;border:1px solid #FECACA;border-radius:var(--r);padding:20px;text-align:center;margin:16px 0}
+.error-state .msg{color:#DC2626;font-size:.95rem;margin-bottom:12px}
+.demo-banner{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r);padding:12px 16px;margin-bottom:16px;font-size:.82rem;color:#92400E}
+.question-item{padding:12px 0;border-bottom:1px solid var(--bd);font-size:.92rem;line-height:1.5}
+.question-item:last-child{border-bottom:none}
+.question-num{font-weight:700;color:var(--pri);margin-right:8px}
+@media(max-width:380px){.area-name{font-size:1.05rem}.detail-title{font-size:1.35rem}}
+</style>
+</head>
+<body>
+
+<div id="loading">
+<div class="icon"></div>
+<h1>Academia Empresarial</h1>
+<p>Cargando datos...</p>
+</div>
+
+<div id="app">
+<div id="hdr"></div>
+<div id="main"></div>
+</div>
+
+<script>
+var GAS_URL='https://script.google.com/macros/s/AKfycbzpi6pATvU4yeMlxG92cYmDxDJASLzjnJHvQ0CfQg-hY3XYgHGFPOKfrYdtP_6qGuq6BQ/exec';
+var USE_DEMO=false;
+
+var DEMO_ROWS=[
+{id:'L001',area:'Constitución y Sociedades',tema:'Tipos de empresa en Bolivia',orden:1,objetivo:'Conocer las diferencias entre empresa unipersonal, SRL y SA para elegir la forma societaria adecuada.',aplica_a:'Todas',fuente_oficial:'FUNDEMPRESA',tipo_fuente:'Guía',referencia:'Ley 1116',url_oficial:'https://www.fundempresa.gob.bo',preguntas:'¿Cuáles son las diferencias entre una SRL y una SA?\n¿Qué tipo de empresa conviene para un solo socio?\n¿Cuál es el capital mínimo para una SRL?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L002',area:'Constitución y Sociedades',tema:'Cómo constituir una SRL',orden:2,objetivo:'Aprender el paso a paso para constituir una sociedad de responsabilidad limitada.',aplica_a:'SRL',fuente_oficial:'FUNDEMPRESA',tipo_fuente:'Trámite',referencia:'Trámite de constitución',url_oficial:'https://www.fundempresa.gob.bo',preguntas:'¿Qué documentos se necesitan?\n¿Cuánto tiempo toma el trámite?\n¿Cuál es el costo aproximado?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L003',area:'Constitución y Sociedades',tema:'Obligaciones societarias anuales',orden:3,objetivo:'Identificar las obligaciones que debe cumplir una sociedad cada año.',aplica_a:'SRL, SA',fuente_oficial:'FUNDEMPRESA',tipo_fuente:'Guía',referencia:'Ley 1116 art. 34',url_oficial:'',preguntas:'¿Cuáles son las obligaciones anuales?\n¿Qué pasa si no se cumplen?',estado:'activo',fecha_revision:''},
+{id:'L004',area:'Contabilidad e Impuestos',tema:'Registro en el SIAT',orden:1,objetivo:'Aprender cómo registrarse en el Servicio de Impuestos Nacionales y obtener el NIT.',aplica_a:'Todas',fuente_oficial:'Servicio de Impuestos Nacionales',tipo_fuente:'Trámite',referencia:'Resolución 10-0016-07',url_oficial:'https://www.impuestos.gob.bo',preguntas:'¿Qué documentos se necesitan para registrarse?\n¿Cómo obtener el NIT?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L005',area:'Contabilidad e Impuestos',tema:'Emisión de facturas',orden:2,objetivo:'Conocer el proceso para emitir facturas correctamente en el SIAT.',aplica_a:'Todas',fuente_oficial:'Servicio de Impuestos Nacionales',tipo_fuente:'Guía',referencia:'Norma de facturación',url_oficial:'https://www.impuestos.gob.bo',preguntas:'¿Qué datos debe contener una factura?\n¿Cuándo se debe emitir?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L006',area:'Contabilidad e Impuestos',tema:'Declaración de impuestos mensuales',orden:3,objetivo:'Entender cómo y cuándo presentar las declaraciones de impuestos.',aplica_a:'Todas',fuente_oficial:'Servicio de Impuestos Nacionales',tipo_fuente:'Formulario',referencia:'Formularios 200, 400, 500',url_oficial:'https://www.impuestos.gob.bo',preguntas:'¿Cuándo se presenta la declaración de IVA?\n¿Qué formularios se usan?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L007',area:'Derecho Laboral',tema:'Contratos de trabajo en Bolivia',orden:1,objetivo:'Conocer los tipos de contratos de trabajo y sus requisitos legales.',aplica_a:'Todas',fuente_oficial:'Ministerio de Trabajo',tipo_fuente:'Ley',referencia:'D.S. 28699 Código Laboral',url_oficial:'https://www.trabajo.gob.bo',preguntas:'¿Cuáles son los tipos de contrato?\n¿Qué debe contener un contrato?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L008',area:'Derecho Laboral',tema:'Beneficios sociales',orden:2,objetivo:'Identificar los beneficios sociales que corresponden a los trabajadores.',aplica_a:'Todas',fuente_oficial:'Ministerio de Trabajo',tipo_fuente:'Ley',referencia:'D.S. 28699 arts. 55-68',url_oficial:'https://www.trabajo.gob.bo',preguntas:'¿Qué es la prima anual?\n¿Cómo se calcula la indemnización?',estado:'activo',fecha_revision:''},
+{id:'L009',area:'Derecho Laboral',tema:'Planilla de sueldos y aportes',orden:3,objetivo:'Aprender a elaborar la planilla de sueldos y calcular los aportes.',aplica_a:'Todas',fuente_oficial:'Ministerio de Trabajo',tipo_fuente:'Guía',referencia:'Resolución Ministerial',url_oficial:'https://www.trabajo.gob.bo',preguntas:'¿Cómo se calcula el aporte AFP?\n¿Cuándo se presenta la planilla?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L010',area:'Finanzas y Bancos',tema:'Flujo de caja empresarial',orden:1,objetivo:'Aprender a elaborar y analizar un flujo de caja para la toma de decisiones.',aplica_a:'Todas',fuente_oficial:'Banco Central de Bolivia',tipo_fuente:'Guía',referencia:'',url_oficial:'https://www.bcb.gob.bo',preguntas:'¿Qué es un flujo de caja?\n¿Cómo se diferencia del estado de resultados?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L011',area:'Finanzas y Bancos',tema:'Créditos bancarios para empresas',orden:2,objetivo:'Conocer las opciones de crédito disponibles y los requisitos.',aplica_a:'Todas',fuente_oficial:'ASFI',tipo_fuente:'Guía',referencia:'Normativa ASFI',url_oficial:'https://www.asfi.gob.bo',preguntas:'¿Qué tipos de crédito existen?\n¿Qué documentos se necesitan?',estado:'activo',fecha_revision:'2025-01-15'},
+{id:'L012',area:'Contratos y Obligaciones',tema:'Contratos comerciales básicos',orden:1,objetivo:'Conocer los elementos esenciales de un contrato comercial válido.',aplica_a:'Todas',fuente_oficial:'Gaceta Oficial',tipo_fuente:'Ley',referencia:'Código Civil arts. 450-575',url_oficial:'',preguntas:'¿Qué elementos debe tener un contrato?\n¿Cuándo es nulo?',estado:'activo',fecha_revision:''},
+{id:'L013',area:'Contratos y Obligaciones',tema:'Reclamaciones y conflictos',orden:2,objetivo:'Conocer los mecanismos para resolver conflictos comerciales.',aplica_a:'Todas',fuente_oficial:'Gaceta Oficial',tipo_fuente:'Ley',referencia:'Ley 1770',url_oficial:'',preguntas:'¿Qué opciones hay para resolver un conflicto?\n¿Cuándo conviene arbitraje?',estado:'activo',fecha_revision:''},
+{id:'L014',area:'Finanzas y Bancos',tema:'Inversiones extranjeras',orden:3,objetivo:'Tema inactivo. No debería mostrarse.',aplica_a:'SA',fuente_oficial:'Banco Central',tipo_fuente:'Ley',referencia:'',url_oficial:'',preguntas:'',estado:'inactivo',fecha_revision:''}
+];
+
+var S={view:'home',area:null,lessonId:null,rows:[],active:[],areas:[],q:''};
+
+function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'):''}
+
+function fld(r,n){return r[n]||r[n.toUpperCase()]||r[n.toLowerCase()]||''}
+
+function validUrl(s){return s&&typeof s==='string'&&(s.indexOf('http://')===0||s.indexOf('https://')===0)}
+
+function areaIcon(n){var s=(n||'').toLowerCase();if(s.indexOf('constitu')>=0||s.indexOf('societ')>=0)return'';if(s.indexOf('contab')>=0||s.indexOf('impuest')>=0)return'';if(s.indexOf('laboral')>=0||s.indexOf('trabaj')>=0)return'';if(s.indexOf('finanz')>=0||s.indexOf('banco')>=0)return'';if(s.indexOf('contrato')>=0||s.indexOf('obligaci')>=0)return'';if(s.indexOf('compra')>=0||s.indexOf('venta')>=0)return'';if(s.indexOf('document')>=0||s.indexOf('gesti')>=0)return'';return''}
+
+function processData(){
+  S.active=S.rows.filter(function(r){return String(fld(r,'estado')).toLowerCase().trim()!=='inactivo'});
+  var seen={};S.areas=[];
+  S.active.forEach(function(r){var a=String(fld(r,'area')||'Sin categoría');if(!seen[a]){seen[a]=true;S.areas.push(a)}});
+}
+
+function countInArea(name){return S.active.filter(function(r){return String(fld(r,'area')||'Sin categoría')===name}).length}
+
+function lessonsInArea(name){
+  return S.active.filter(function(r){return String(fld(r,'area')||'Sin categoría')===name})
+    .sort(function(a,b){return(parseInt(fld(a,'orden'))||999)-(parseInt(fld(b,'orden'))||999)});
+}
+
+function findLesson(id){return S.active.find(function(r){return String(fld(r,'id'))===String(id)})}
+
+async function init(){
+  document.getElementById('loading').style.display='flex';
+  document.getElementById('app').style.display='none';
+  if(USE_DEMO){S.rows=DEMO_ROWS;processData();showApp();renderHome();return}
+  try{
+    var r=await fetch(GAS_URL);
+    var d=await r.json();
+    if(d&&d.ok&&Array.isArray(d.rows)){S.rows=d.rows}else{throw new Error('Respuesta no válida')}
+    processData();showApp();renderHome();
+  }catch(e){
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('hdr').innerHTML='<div class="hdr-title"> Academia Empresarial</div>';
+    document.getElementById('main').innerHTML='<div class="error-state"><div class="msg">No se pudo conectar con Google Sheets.<br>'+esc(e.message)+'</div><button class="btn-main" onclick="init()"> Reintentar</button></div>';
+  }
+}
+
+function showApp(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('app').style.display='block';
+}
+
+function renderHome(){
+  S.view='home';S.area=null;
+  var hdr='<div class="hdr-title"> Academia Empresarial</div><div class="hdr-sub">Bolivia · Ruta de aprendizaje empresarial</div>';
+  document.getElementById('hdr').innerHTML=hdr;
+  var h='';
+  if(USE_DEMO){h+='<div class="demo-banner"> Datos de ejemplo. Conecta Google Sheets para ver contenido real.</div>'}
+  h+='<input class="search-input" placeholder=" Buscar lecciones..." onkeydown="if(event.key===\'Enter\'){S.q=this.value;renderSearch()}">';
+  h+='<div class="section-title">Áreas de estudio</div>';
+  if(!S.areas.length){h+='<div class="empty-state"><div class="icon"></div><div class="msg">No hay áreas disponibles.</div></div>'}
+  else{
+    S.areas.forEach(function(a,i){
+      h+='<div class="area-card" onclick="goArea('+i+')">';
+      h+='<span class="area-icon">'+areaIcon(a)+'</span>';
+      h+='<div class="area-info">';
+      h+='<div class="area-name">'+esc(a)+'</div>';
+      h+='<div class="area-count">'+countInArea(a)+' lecciones</div>';
+      h+='</div>';
+      h+='<span class="area-arrow"></span>';
+      h+='</div>';
+    });
+  }
+  document.getElementById('main').innerHTML=h;
+}
+
+function goArea(idx){
+  var name=S.areas[idx];if(!name)return;
+  S.view='area';S.area=name;
+  document.getElementById('hdr').innerHTML='<div class="hdr-back"><button class="hdr-btn" onclick="renderHome()"></button><div><div class="hdr-title">'+esc(name)+'</div><div class="hdr-sub">Lecciones del área</div></div></div>';
+  var lessons=lessonsInArea(name);
+  var h='';
+  if(!lessons.length){h+='<div class="empty-state"><div class="icon"></div><div class="msg">No hay lecciones en esta área.</div></div>'}
+  else{
+    lessons.forEach(function(ls,i){
+      var obj=String(fld(ls,'objetivo')||'');if(obj.length>100)obj=obj.substring(0,100)+'...';
+      h+='<div class="lesson-card" onclick="goLesson(\''+esc(fld(ls,'id')||'L'+i)+'\')">';
+      h+='<div class="lesson-hd"><span class="lesson-num">'+esc(fld(ls,'orden')||(i+1))+'</span>';
+      h+='<div class="lesson-title">'+esc(fld(ls,'tema'))+'</div></div>';
+      h+='<div class="lesson-obj">'+esc(obj)+'</div>';
+      var tags=[];
+      if(fld(ls,'aplica_a'))tags.push(String(fld(ls,'aplica_a')));
+      if(fld(ls,'tipo_fuente'))tags.push(String(fld(ls,'tipo_fuente')));
+      if(fld(ls,'fuente_oficial'))tags.push(String(fld(ls,'fuente_oficial')));
+      if(tags.length){h+='<div class="lesson-tags">';tags.forEach(function(t){h+='<span class="tag">'+esc(t)+'</span>'});h+='</div>'}
+      h+='</div>';
+    });
+  }
+  document.getElementById('main').innerHTML=h;
+}
+
+function goLesson(id){
+  S.view='lesson';S.lessonId=id;
+  var ls=findLesson(id);
+  var backAct=S.area?'goAreaByName()':'renderHome()';
+  document.getElementById('hdr').innerHTML='<div class="hdr-back"><button class="hdr-btn" onclick="'+backAct+'"></button><div><div class="hdr-title">Lección</div></div></div>';
+  if(!ls){document.getElementById('main').innerHTML='<div class="empty-state"><div class="icon"></div><div class="msg">Lección no encontrada.</div></div>';return}
+  var h='';
+  h+='<div class="detail-title">'+esc(fld(ls,'tema'))+'</div>';
+  var mt=[];
+  if(fld(ls,'aplica_a'))mt.push('Aplica a: '+String(fld(ls,'aplica_a')));
+  if(fld(ls,'orden'))mt.push('Orden: '+String(fld(ls,'orden')));
+  if(fld(ls,'fecha_revision'))mt.push('Revisado: '+String(fld(ls,'fecha_revision')));
+  if(mt.length){h+='<div class="detail-meta">';mt.forEach(function(t){h+='<span class="meta-tag">'+esc(t)+'</span>'});h+='</div>'}
+  if(fld(ls,'objetivo')){h+='<div class="detail-section"><div class="detail-label">Objetivo de aprendizaje</div><div class="detail-value">'+esc(fld(ls,'objetivo'))+'</div></div>'}
+  var fuente=fld(ls,'fuente_oficial'),tipo=fld(ls,'tipo_fuente'),ref=fld(ls,'referencia');
+  if(fuente||tipo||ref){
+    h+='<div class="detail-section"><div class="detail-label">Fuente oficial</div>';
+    if(fuente)h+='<div class="detail-value"><strong>Institución:</strong> '+esc(fuente)+'</div>';
+    if(tipo)h+='<div class="detail-value"><strong>Tipo:</strong> '+esc(tipo)+'</div>';
+    if(ref)h+='<div class="detail-value"><strong>Referencia:</strong> '+esc(ref)+'</div>';
+    h+='</div>';
+  }
+  var preg=fld(ls,'preguntas');
+  if(preg){
+    h+='<div class="detail-section"><div class="detail-label">Preguntas de estudio</div>';
+    String(preg).split('\n').forEach(function(p,i){
+      if(p.trim())h+='<div class="question-item"><span class="question-num">'+(i+1)+'.</span>'+esc(p.trim())+'</div>';
+    });
+    h+='</div>';
+  }
+  var url=String(fld(ls,'url_oficial'));
+  if(validUrl(url)){
+    h+='<button class="btn-main" onclick="window.open(\''+esc(url)+'\',\'_blank\')"> Consultar fuente oficial</button>';
+  }else if(url){
+    h+='<div class="demo-banner"> La URL de esta fuente no es válida.</div>';
+  }else{
+    h+='<div class="empty-state" style="padding:24px"><div class="msg">Esta lección no tiene enlace oficial.</div></div>';
+  }
+  document.getElementById('main').innerHTML=h;
+}
+
+function goAreaByName(){
+  if(!S.area){renderHome();return}
+  var idx=S.areas.indexOf(S.area);
+  if(idx>=0){goArea(idx)}else{renderHome()}
+}
+
+function renderSearch(){
+  S.view='search';
+  document.getElementById('hdr').innerHTML='<div class="hdr-back"><button class="hdr-btn" onclick="renderHome()"></button><div><div class="hdr-title"> Buscar</div><div class="hdr-sub">Encuentra lecciones</div></div></div>';
+  var h='<input class="search-input" id="searchInput" placeholder=" Buscar..." value="'+esc(S.q)+'" oninput="S.q=this.value;doSearch()">';
+  h+='<div id="searchResults"></div>';
+  document.getElementById('main').innerHTML=h;
+  doSearch();
+}
+
+function doSearch(){
+  var el=document.getElementById('searchResults');if(!el)return;
+  var q=S.q.toLowerCase().trim();
+  if(q.length<2){el.innerHTML='<div class="empty-state"><div class="msg">Escribe al menos 2 letras.</div></div>';return}
+  var r=S.active.filter(function(x){
+    return[fld(x,'tema'),fld(x,'area'),fld(x,'objetivo'),fld(x,'fuente_oficial'),fld(x,'referencia'),fld(x,'preguntas')].join(' ').toLowerCase().indexOf(q)>=0;
+  });
+  if(!r.length){el.innerHTML='<div class="empty-state"><div class="icon"></div><div class="msg">Sin resultados para "'+esc(S.q)+'"</div></div>';return}
+  var h='<div class="section-title">'+r.length+' resultado(s)</div>';
+  r.forEach(function(ls,i){
+    var obj=String(fld(ls,'objetivo')||'');if(obj.length>100)obj=obj.substring(0,100)+'...';
+    h+='<div class="lesson-card" onclick="S.area=\''+esc(String(fld(ls,'area')||''))+'\';goLesson(\''+esc(fld(ls,'id')||'R'+i)+'\')">';
+    h+='<div class="lesson-hd"><div class="lesson-title">'+esc(fld(ls,'tema'))+'</div></div>';
+    h+='<div class="lesson-obj">'+esc(obj)+'</div>';
+    if(fld(ls,'area'))h+='<div class="lesson-tags"><span class="tag">'+esc(fld(ls,'area'))+'</span></div>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+
+document.addEventListener('DOMContentLoaded',function(){init()});
+</script>
+</body>
+</html>
