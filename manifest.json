@@ -1,0 +1,15 @@
+{
+  "name": "Academia Empresarial Bolivia",
+  "short_name": "Academia Bol",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F7F5F2",
+  "theme_color": "#1B2A4A",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2A4A'/%3E%3Cpolygon points='32,8 14,18 32,28 50,18' fill='%23C8943C'/%3E%3Ctext x='32' y='50' text-anchor='middle' font-size='16' fill='%23FFF'%3EAB%3C/text%3E%3C/svg%3E",
+      "sizes": "64x64",
+      "type": "image/svg+xml"
+    }
+  ]
+}
