@@ -302,7 +302,19 @@ async function showReport(){
   document.getElementById('main').innerHTML='<div class="sec">Cargando...</div>';
   var r=await api('getReport',{filtro:'mes_actual'});
   if(r.error){document.getElementById('main').innerHTML='<div class="sec"><div class="err">'+esc(r.error)+'</div></div>';return}
-  var h='<div class="sec"><h3>Informe del Mes</h3>';
+  var h='<div class="sec"><h3>Informe de Ventas y Ganancias</h3>';
+  h+='<div class="filter-row">';
+  h+='<select id="rep-filtro" onchange="loadReport()">';
+  h+='<option value="dia">Día de Hoy</option>';
+  h+='<option value="semana">Última Semana</option>';
+  h+='<option value="mes_actual" selected>Mes Actual</option>';
+  h+='<option value="mes_anterior">Mes Anterior</option>';
+  h+='<option value="anio">Año Completo</option>';
+  h+='<option value="personalizado">Personalizado</option>';
+  h+='</select>';
+  h+='<select id="rep-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
+  h+='</div>';
+  h+='<div id="rep-content">';
   h+='<div class="cards">';
   h+='<div class="dash"><div class="val">Bs '+r.totalVentas.toFixed(2)+'</div><div class="lbl">Total Ventas</div></div>';
   h+='<div class="dash"><div class="val" style="color:var(--ok)">Bs '+r.totalGanancia.toFixed(2)+'</div><div class="lbl">Ganancia Bruta</div></div>';
@@ -353,10 +365,20 @@ async function markOblig(id,estado){
 async function showExpenses(){
   if(USER.rol!=='Gerencia'){document.getElementById('main').innerHTML='<div class="sec"><div class="err">No autorizado</div></div>';return}
   document.getElementById('main').innerHTML='<div class="sec">Cargando...</div>';
-  var r=await api('getExpenses',{filtro:'todo'});
+  var r=await api('getExpenses',{filtro:'mes_actual'});
   if(r.error){document.getElementById('main').innerHTML='<div class="sec"><div class="err">'+esc(r.error)+'</div></div>';return}
   var h='';
   h+='<div class="sec"><h3>Registrar Gasto</h3>';
+  h+='<div class="filter-row">';
+  h+='<select id="gast-filtro" onchange="loadExpenses()">';
+  h+='<option value="dia">Día de Hoy</option>';
+  h+='<option value="semana">Última Semana</option>';
+  h+='<option value="mes_actual" selected>Mes Actual</option>';
+  h+='<option value="mes_anterior">Mes Anterior</option>';
+  h+='<option value="anio">Año Completo</option>';
+  h+='</select>';
+  h+='<select id="gast-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
+  h+='</div>';
   h+='<label>Descripción</label><input id="ng-desc" placeholder="Descripción del gasto">';
   h+='<div class="cards" style="margin-top:12px">';
   h+='<div><label>Monto (Bs)</label><input type="number" id="ng-monto" placeholder="0.00" step="0.01"></div>';
@@ -376,7 +398,47 @@ async function showExpenses(){
   h+='</div>';
   document.getElementById('main').innerHTML=h;
 }
-
+async function loadReport(){
+  var f=document.getElementById('rep-filtro').value;
+  var a=document.getElementById('rep-anio').value;
+  var params={filtro:f};
+  if(f==='anio')params.anio=a;
+  var r=await api('getReport',params);
+  if(r.error)return;
+  var h='<div class="cards">';
+  h+='<div class="dash"><div class="val">Bs '+r.totalVentas.toFixed(2)+'</div><div class="lbl">Total Ventas</div></div>';
+  h+='<div class="dash"><div class="val" style="color:var(--ok)">Bs '+r.totalGanancia.toFixed(2)+'</div><div class="lbl">Ganancia Bruta</div></div>';
+  h+='<div class="dash"><div class="val" style="color:var(--er)">Bs '+r.totalGastos.toFixed(2)+'</div><div class="lbl">Gastos</div></div>';
+  h+='<div class="dash"><div class="val" style="color:'+(r.gananciaNeta>=0?'var(--ok)':'var(--er)')+'">Bs '+r.gananciaNeta.toFixed(2)+'</div><div class="lbl">Ganancia Neta</div></div>';
+  h+='<div class="dash"><div class="val">'+r.numVentas+'</div><div class="lbl">Unidades</div></div>';
+  h+='<div class="dash"><div class="val">'+r.margen+'%</div><div class="lbl">Margen</div></div>';
+  h+='</div>';
+  if(r.detalle&&r.detalle.length){
+    h+='<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Ganancia</th></tr></thead><tbody>';
+    r.detalle.forEach(function(v){h+='<tr><td>'+v.fecha+'</td><td>'+esc(v.producto)+'</td><td>'+v.cantidad+'</td><td>Bs '+v.total.toFixed(2)+'</td><td style="color:'+(v.ganancia>=0?'var(--ok)':'var(--er)')+'">Bs '+v.ganancia.toFixed(2)+'</td></tr>'});
+    h+='</tbody></table></div>';
+  }
+  var el=document.getElementById('rep-content');if(el)el.innerHTML=h;
+}
+async function loadExpenses(){
+  var f=document.getElementById('gast-filtro').value;
+  var a=document.getElementById('gast-anio').value;
+  var params={filtro:f};
+  if(f==='anio')params.anio=a;
+  var r=await api('getExpenses',params);
+  if(r.error)return;
+  var h='<div class="sec"><h3>Historial de Gastos</h3>';
+  if(!r.gastos||!r.gastos.length)h+='<p style="color:var(--t3)">Sin gastos en este período</p>';
+  else{
+    var total=0;
+    h+='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Beneficiario</th></tr></thead><tbody>';
+    r.gastos.forEach(function(g){total+=g.monto;h+='<tr><td>'+g.fecha+'</td><td>'+esc(g.descripcion)+'</td><td>'+esc(g.categoria)+'</td><td>Bs '+g.monto.toFixed(2)+'</td><td>'+esc(g.beneficiario)+'</td></tr>'});
+    h+='<tr><td colspan="3"><strong>TOTAL</strong></td><td><strong>Bs '+total.toFixed(2)+'</strong></td><td></td></tr>';
+    h+='</tbody></table></div>';
+  }
+  h+='</div>';
+  var el=document.getElementById('gast-historial');if(el)el.innerHTML=h;
+}
 async function addExpense(){
   var d={descripcion:document.getElementById('ng-desc').value,monto:document.getElementById('ng-monto').value,categoria:document.getElementById('ng-cat').value,beneficiario:document.getElementById('ng-benef').value,documento:document.getElementById('ng-doc').value};
   if(!d.descripcion||!d.monto){document.getElementById('ng-msg').innerHTML='<div class="err">Complete descripción y monto</div>';return}
