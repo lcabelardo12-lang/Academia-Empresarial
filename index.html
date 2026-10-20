@@ -81,12 +81,14 @@ function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').re
 
 async function api(action,data){
   try{
-    if(data){
+    if(data&&action.indexOf('get')!==0){
       data.action=action;data.token=TOKEN;
       var r=await fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});
       return await r.json();
     }else{
-      return await(await fetch(GAS+'?action='+action+'&token='+TOKEN)).json();
+      var url=GAS+'?action='+action+'&token='+TOKEN;
+      if(data){for(var k in data){url+='&'+k+'='+encodeURIComponent(data[k])}}
+      return await(await fetch(url)).json();
     }
   }catch(e){return{error:'Error de conexión: '+e.message}}
 }
@@ -143,12 +145,12 @@ async function showDash(){
   }
   h+='</div>';
   if(r.stockBajo&&r.stockBajo.length){
-    h+='<div class="sec"><h3>⚠️ Stock Bajo</h3>';
+    h+='<div class="sec"><h3>Stock Bajo</h3>';
     r.stockBajo.forEach(function(s){h+='<div class="alert alert-w">'+esc(s.nombre)+' — Stock: '+s.stock+' / Mínimo: '+s.minimo+'</div>'});
     h+='</div>';
   }
   if(r.proximasOblig&&r.proximasOblig.length){
-    h+='<div class="sec"><h3>📅 Próximas Obligaciones</h3>';
+    h+='<div class="sec"><h3>Próximas Obligaciones</h3>';
     r.proximasOblig.forEach(function(o){
       var cls=o.dias<=3?'alert-e':'alert-w';
       h+='<div class="alert '+cls+'">'+esc(o.obligacion)+' — '+esc(o.periodo)+' — Vence: '+o.fecha+' ('+(o.dias<0?'vencido hace '+Math.abs(o.dias):'en '+o.dias)+' días)</div>';
@@ -226,6 +228,18 @@ async function showSales(){
   h+='<button class="btn btn-s" onclick="addSale()">Confirmar Venta</button>';
   h+='<div id="ns-msg"></div></div>';
   h+='<div class="sec"><h3>Historial de Ventas</h3>';
+  h+='<div class="filter-row">';
+  h+='<select id="sales-filtro" onchange="loadSales()">';
+  h+='<option value="dia">Día de Hoy</option>';
+  h+='<option value="semana">Última Semana</option>';
+  h+='<option value="mes_actual">Mes Actual</option>';
+  h+='<option value="mes_anterior">Mes Anterior</option>';
+  h+='<option value="anio">Año Completo</option>';
+  h+='<option value="todo" selected>Todo</option>';
+  h+='</select>';
+  h+='<select id="sales-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
+  h+='</div>';
+  h+='<div id="sales-historial">';
   if(!sr.ventas||!sr.ventas.length)h+='<p style="color:var(--t3)">Sin ventas registradas</p>';
   else{
     h+='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Doc</th><th>Cliente</th></tr></thead><tbody>';
@@ -234,7 +248,7 @@ async function showSales(){
     });
     h+='</tbody></table></div>';
   }
-  h+='</div>';
+  h+='</div></div>';
   document.getElementById('main').innerHTML=h;
   document.getElementById('ns-prod').onchange=function(){
     var opt=this.options[this.selectedIndex];
@@ -245,12 +259,28 @@ async function showSales(){
 async function addSale(){
   var sel=document.getElementById('ns-prod');
   if(!sel.value){document.getElementById('ns-msg').innerHTML='<div class="err">Seleccione producto</div>';return}
-  var opt=sel.options[sel.selectedIndex];
   var d={idProducto:sel.value,cantidad:document.getElementById('ns-cant').value,precioVenta:document.getElementById('ns-prec').value,cliente:document.getElementById('ns-cli').value,nitCliente:document.getElementById('ns-nit').value,tipoDocumento:document.getElementById('ns-tdoc').value,numeroFactura:document.getElementById('ns-nfact').value,formaPago:document.getElementById('ns-fpago').value};
   var r=await api('registerSale',d);
   if(r.error){document.getElementById('ns-msg').innerHTML='<div class="err">'+esc(r.error)+'</div>';return}
   document.getElementById('ns-msg').innerHTML='<div class="ok">Venta registrada: Bs '+r.total.toFixed(2)+' | Ganancia: Bs '+r.ganancia.toFixed(2)+'</div>';
   setTimeout(showSales,1500);
+}
+
+async function loadSales(){
+  var f=document.getElementById('sales-filtro').value;
+  var a=document.getElementById('sales-anio').value;
+  var params={filtro:f};
+  if(f==='anio')params.anio=a;
+  var r=await api('getSales',params);
+  if(r.error)return;
+  var h='';
+  if(!r.ventas||!r.ventas.length)h='<p style="color:var(--t3)">Sin ventas en este período</p>';
+  else{
+    h='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Doc</th><th>Cliente</th></tr></thead><tbody>';
+    r.ventas.forEach(function(v){h+='<tr><td>'+v.fecha+'</td><td>'+esc(v.producto)+'</td><td>'+v.cantidad+'</td><td>Bs '+v.total.toFixed(2)+'</td><td>'+esc(v.tipoDocumento)+'</td><td>'+esc(v.cliente)+'</td></tr>'});
+    h+='</tbody></table></div>';
+  }
+  var el=document.getElementById('sales-historial');if(el)el.innerHTML=h;
 }
 
 async function showPurchases(){
@@ -310,7 +340,6 @@ async function showReport(){
   h+='<option value="mes_actual" selected>Mes Actual</option>';
   h+='<option value="mes_anterior">Mes Anterior</option>';
   h+='<option value="anio">Año Completo</option>';
-  h+='<option value="personalizado">Personalizado</option>';
   h+='</select>';
   h+='<select id="rep-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
   h+='</div>';
@@ -322,13 +351,37 @@ async function showReport(){
   h+='<div class="dash"><div class="val" style="color:'+(r.gananciaNeta>=0?'var(--ok)':'var(--er)')+'">Bs '+r.gananciaNeta.toFixed(2)+'</div><div class="lbl">Ganancia Neta</div></div>';
   h+='<div class="dash"><div class="val">'+r.numVentas+'</div><div class="lbl">Unidades Vendidas</div></div>';
   h+='<div class="dash"><div class="val">'+r.margen+'%</div><div class="lbl">Margen</div></div>';
-  h+='</div></div>';
+  h+='</div>';
   if(r.detalle&&r.detalle.length){
-    h+='<div class="sec"><h3>Detalle de Ventas</h3><div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Ganancia</th></tr></thead><tbody>';
+    h+='<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Ganancia</th></tr></thead><tbody>';
     r.detalle.forEach(function(v){h+='<tr><td>'+v.fecha+'</td><td>'+esc(v.producto)+'</td><td>'+v.cantidad+'</td><td>Bs '+v.total.toFixed(2)+'</td><td style="color:'+(v.ganancia>=0?'var(--ok)':'var(--er)')+'">Bs '+v.ganancia.toFixed(2)+'</td></tr>'});
-    h+='</tbody></table></div></div>';
+    h+='</tbody></table></div>';
   }
+  h+='</div></div>';
   document.getElementById('main').innerHTML=h;
+}
+
+async function loadReport(){
+  var f=document.getElementById('rep-filtro').value;
+  var a=document.getElementById('rep-anio').value;
+  var params={filtro:f};
+  if(f==='anio')params.anio=a;
+  var r=await api('getReport',params);
+  if(r.error)return;
+  var h='<div class="cards">';
+  h+='<div class="dash"><div class="val">Bs '+r.totalVentas.toFixed(2)+'</div><div class="lbl">Total Ventas</div></div>';
+  h+='<div class="dash"><div class="val" style="color:var(--ok)">Bs '+r.totalGanancia.toFixed(2)+'</div><div class="lbl">Ganancia Bruta</div></div>';
+  h+='<div class="dash"><div class="val" style="color:var(--er)">Bs '+r.totalGastos.toFixed(2)+'</div><div class="lbl">Gastos</div></div>';
+  h+='<div class="dash"><div class="val" style="color:'+(r.gananciaNeta>=0?'var(--ok)':'var(--er)')+'">Bs '+r.gananciaNeta.toFixed(2)+'</div><div class="lbl">Ganancia Neta</div></div>';
+  h+='<div class="dash"><div class="val">'+r.numVentas+'</div><div class="lbl">Unidades</div></div>';
+  h+='<div class="dash"><div class="val">'+r.margen+'%</div><div class="lbl">Margen</div></div>';
+  h+='</div>';
+  if(r.detalle&&r.detalle.length){
+    h+='<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Ganancia</th></tr></thead><tbody>';
+    r.detalle.forEach(function(v){h+='<tr><td>'+v.fecha+'</td><td>'+esc(v.producto)+'</td><td>'+v.cantidad+'</td><td>Bs '+v.total.toFixed(2)+'</td><td style="color:'+(v.ganancia>=0?'var(--ok)':'var(--er)')+'">Bs '+v.ganancia.toFixed(2)+'</td></tr>'});
+    h+='</tbody></table></div>';
+  }
+  var el=document.getElementById('rep-content');if(el)el.innerHTML=h;
 }
 
 async function showObligations(){
@@ -343,7 +396,7 @@ async function showObligations(){
       h+='<div class="sec" style="margin-bottom:8px">';
       h+='<div style="display:flex;justify-content:space-between;align-items:center"><strong>'+esc(o.obligacion)+'</strong><span class="tag '+cls+'">'+esc(o.estado)+'</span></div>';
       h+='<div style="font-size:.82rem;color:var(--t2);margin-top:6px">Período: '+esc(o.periodo)+' | Vence: '+o.fecha+' | Responsable: '+esc(o.responsable)+'</div>';
-      if(o.url)h+='<a href="'+esc(o.url)+'" target="_blank" style="font-size:.78rem;color:var(--pr);font-weight:600">Ver fuente oficial →</a>';
+      if(o.url)h+='<a href="'+esc(o.url)+'" target="_blank" style="font-size:.78rem;color:var(--pr);font-weight:600">Ver fuente oficial</a>';
       if(USER.rol==='Gerencia'){
         h+='<div style="margin-top:8px;display:flex;gap:6px">';
         h+='<button class="btn btn-b" style="width:auto;padding:8px 16px;margin:0;font-size:.78rem" onclick="markOblig(\''+o.id+'\',\'Cumplida\')">Marcar Cumplida</button>';
@@ -369,16 +422,6 @@ async function showExpenses(){
   if(r.error){document.getElementById('main').innerHTML='<div class="sec"><div class="err">'+esc(r.error)+'</div></div>';return}
   var h='';
   h+='<div class="sec"><h3>Registrar Gasto</h3>';
-  h+='<div class="filter-row">';
-  h+='<select id="gast-filtro" onchange="loadExpenses()">';
-  h+='<option value="dia">Día de Hoy</option>';
-  h+='<option value="semana">Última Semana</option>';
-  h+='<option value="mes_actual" selected>Mes Actual</option>';
-  h+='<option value="mes_anterior">Mes Anterior</option>';
-  h+='<option value="anio">Año Completo</option>';
-  h+='</select>';
-  h+='<select id="gast-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
-  h+='</div>';
   h+='<label>Descripción</label><input id="ng-desc" placeholder="Descripción del gasto">';
   h+='<div class="cards" style="margin-top:12px">';
   h+='<div><label>Monto (Bs)</label><input type="number" id="ng-monto" placeholder="0.00" step="0.01"></div>';
@@ -389,37 +432,29 @@ async function showExpenses(){
   h+='<button class="btn btn-g" onclick="addExpense()">Registrar Gasto</button>';
   h+='<div id="ng-msg"></div></div>';
   h+='<div class="sec"><h3>Historial de Gastos</h3>';
+  h+='<div class="filter-row">';
+  h+='<select id="gast-filtro" onchange="loadExpenses()">';
+  h+='<option value="dia">Día de Hoy</option>';
+  h+='<option value="semana">Última Semana</option>';
+  h+='<option value="mes_actual" selected>Mes Actual</option>';
+  h+='<option value="mes_anterior">Mes Anterior</option>';
+  h+='<option value="anio">Año Completo</option>';
+  h+='</select>';
+  h+='<select id="gast-anio"><option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option></select>';
+  h+='</div>';
+  h+='<div id="gast-historial">';
   if(!r.gastos||!r.gastos.length)h+='<p style="color:var(--t3)">Sin gastos registrados</p>';
   else{
+    var totalG=0;
     h+='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Beneficiario</th></tr></thead><tbody>';
-    r.gastos.forEach(function(g){h+='<tr><td>'+g.fecha+'</td><td>'+esc(g.descripcion)+'</td><td>'+esc(g.categoria)+'</td><td>Bs '+g.monto.toFixed(2)+'</td><td>'+esc(g.beneficiario)+'</td></tr>'});
+    r.gastos.forEach(function(g){totalG+=g.monto;h+='<tr><td>'+g.fecha+'</td><td>'+esc(g.descripcion)+'</td><td>'+esc(g.categoria)+'</td><td>Bs '+g.monto.toFixed(2)+'</td><td>'+esc(g.beneficiario)+'</td></tr>'});
+    h+='<tr><td colspan="3"><strong>TOTAL</strong></td><td><strong>Bs '+totalG.toFixed(2)+'</strong></td><td></td></tr>';
     h+='</tbody></table></div>';
   }
-  h+='</div>';
+  h+='</div></div>';
   document.getElementById('main').innerHTML=h;
 }
-async function loadReport(){
-  var f=document.getElementById('rep-filtro').value;
-  var a=document.getElementById('rep-anio').value;
-  var params={filtro:f};
-  if(f==='anio')params.anio=a;
-  var r=await api('getReport',params);
-  if(r.error)return;
-  var h='<div class="cards">';
-  h+='<div class="dash"><div class="val">Bs '+r.totalVentas.toFixed(2)+'</div><div class="lbl">Total Ventas</div></div>';
-  h+='<div class="dash"><div class="val" style="color:var(--ok)">Bs '+r.totalGanancia.toFixed(2)+'</div><div class="lbl">Ganancia Bruta</div></div>';
-  h+='<div class="dash"><div class="val" style="color:var(--er)">Bs '+r.totalGastos.toFixed(2)+'</div><div class="lbl">Gastos</div></div>';
-  h+='<div class="dash"><div class="val" style="color:'+(r.gananciaNeta>=0?'var(--ok)':'var(--er)')+'">Bs '+r.gananciaNeta.toFixed(2)+'</div><div class="lbl">Ganancia Neta</div></div>';
-  h+='<div class="dash"><div class="val">'+r.numVentas+'</div><div class="lbl">Unidades</div></div>';
-  h+='<div class="dash"><div class="val">'+r.margen+'%</div><div class="lbl">Margen</div></div>';
-  h+='</div>';
-  if(r.detalle&&r.detalle.length){
-    h+='<div style="overflow-x:auto;margin-top:12px"><table><thead><tr><th>Fecha</th><th>Producto</th><th>C</th><th>Total</th><th>Ganancia</th></tr></thead><tbody>';
-    r.detalle.forEach(function(v){h+='<tr><td>'+v.fecha+'</td><td>'+esc(v.producto)+'</td><td>'+v.cantidad+'</td><td>Bs '+v.total.toFixed(2)+'</td><td style="color:'+(v.ganancia>=0?'var(--ok)':'var(--er)')+'">Bs '+v.ganancia.toFixed(2)+'</td></tr>'});
-    h+='</tbody></table></div>';
-  }
-  var el=document.getElementById('rep-content');if(el)el.innerHTML=h;
-}
+
 async function loadExpenses(){
   var f=document.getElementById('gast-filtro').value;
   var a=document.getElementById('gast-anio').value;
@@ -427,18 +462,18 @@ async function loadExpenses(){
   if(f==='anio')params.anio=a;
   var r=await api('getExpenses',params);
   if(r.error)return;
-  var h='<div class="sec"><h3>Historial de Gastos</h3>';
-  if(!r.gastos||!r.gastos.length)h+='<p style="color:var(--t3)">Sin gastos en este período</p>';
+  var h='';
+  if(!r.gastos||!r.gastos.length)h='<p style="color:var(--t3)">Sin gastos en este período</p>';
   else{
     var total=0;
-    h+='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Beneficiario</th></tr></thead><tbody>';
+    h='<div style="overflow-x:auto"><table><thead><tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Monto</th><th>Beneficiario</th></tr></thead><tbody>';
     r.gastos.forEach(function(g){total+=g.monto;h+='<tr><td>'+g.fecha+'</td><td>'+esc(g.descripcion)+'</td><td>'+esc(g.categoria)+'</td><td>Bs '+g.monto.toFixed(2)+'</td><td>'+esc(g.beneficiario)+'</td></tr>'});
     h+='<tr><td colspan="3"><strong>TOTAL</strong></td><td><strong>Bs '+total.toFixed(2)+'</strong></td><td></td></tr>';
     h+='</tbody></table></div>';
   }
-  h+='</div>';
   var el=document.getElementById('gast-historial');if(el)el.innerHTML=h;
 }
+
 async function addExpense(){
   var d={descripcion:document.getElementById('ng-desc').value,monto:document.getElementById('ng-monto').value,categoria:document.getElementById('ng-cat').value,beneficiario:document.getElementById('ng-benef').value,documento:document.getElementById('ng-doc').value};
   if(!d.descripcion||!d.monto){document.getElementById('ng-msg').innerHTML='<div class="err">Complete descripción y monto</div>';return}
