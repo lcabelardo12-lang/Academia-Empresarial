@@ -163,33 +163,39 @@ async function showProducts(){
     h+='<div class="sec"><h3>Agregar Producto</h3>';
     h+='<label>Nombre</label><input id="np-nom" placeholder="Nombre del producto">';
     h+='<label>Codigo</label><input id="np-cod" placeholder="Ej: DEN-001">';
+    h+='<label>Descripcion</label><input id="np-desc" placeholder="Ej: Opallis Flow x 2gr">';
     h+='<label>Marca</label><input id="np-mar" placeholder="Marca">';
     h+='<label>Categoria</label><input id="np-cat" placeholder="Ej: Resinas, Equipos">';
+    h+='<label>Unidad</label><select id="np-unid"><option>Unidad</option><option>Jeringa</option><option>Caja</option><option>Par</option><option>Kit</option><option>Metro</option><option>Bobina</option><option>Otro</option></select>';
     h+='<div class="cards" style="margin-top:12px">';
-    h+='<div><label>Costo (Bs)</label><input type="number" id="np-cost" step="0.01"></div>';
+    h+='<div><label>Costo Compra (Bs)</label><input type="number" id="np-cost" step="0.01"></div>';
     h+='<div><label>Precio Venta (Bs)</label><input type="number" id="np-prev" step="0.01"></div>';
+    h+='<div><label>Precio Mayorista (Bs)</label><input type="number" id="np-prem" step="0.01"></div>';
     h+='<div><label>Stock Minimo</label><input type="number" id="np-min"></div>';
     h+='<div><label>Vencimiento</label><input type="date" id="np-venc"></div>';
+    h+='<div><label>Estado</label><select id="np-est"><option>Activo</option><option>Inactivo</option></select></div>';
     h+='</div>';
+    h+='<label>Observaciones</label><input id="np-obs" placeholder="Notas adicionales">';
     h+='<button class="btn btn-g" onclick="addProduct()">Guardar Producto</button>';
     h+='<div id="np-msg" class="ok"></div></div>';
   }
   h+='<div class="sec"><h3>Productos ('+r.productos.length+')</h3>';
-  h+='<div style="overflow-x:auto"><table><thead><tr><th>Nombre</th><th>Marca</th><th>Precio</th><th>Stock</th>';
-  if(USER.rol==='Gerencia')h+='<th>Costo</th>';
+  h+='<div style="overflow-x:auto"><table><thead><tr><th>Nombre</th><th>Descripcion</th><th>Marca</th><th>Unidad</th><th>Precio</th><th>Stock</th>';
+  if(USER.rol==='Gerencia')h+='<th>Costo</th><th>Mayorista</th>';
   h+='<th>Estado</th></tr></thead><tbody>';
   r.productos.forEach(function(p){
     var stk=p.stock<=p.stockMinimo?'<span class="tag tag-er">'+p.stock+'</span>':p.stock;
-    h+='<tr><td>'+esc(p.nombre)+'</td><td>'+esc(p.marca)+'</td><td>Bs '+p.precioVenta.toFixed(2)+'</td><td>'+stk+'</td>';
-    if(USER.rol==='Gerencia')h+='<td>Bs '+(p.costoCompra||0).toFixed(2)+'</td>';
-    h+='<td><span class="tag tag-ok">'+esc(p.estado)+'</span></td></tr>';
+    var est=p.estado==='Activo'?'<span class="tag tag-ok">Activo</span>':'<span class="tag tag-er">Inactivo</span>';
+    h+='<tr><td>'+esc(p.nombre)+'</td><td>'+esc(p.descripcion||'-')+'</td><td>'+esc(p.marca)+'</td><td>'+esc(p.unidad||'-')+'</td><td>Bs '+p.precioVenta.toFixed(2)+'</td><td>'+stk+'</td>';
+    if(USER.rol==='Gerencia')h+='<td>Bs '+(p.costoCompra||0).toFixed(2)+'</td><td>Bs '+(p.precioMayorista||0).toFixed(2)+'</td>';
+    h+='<td>'+est+'</td></tr>';
   });
   h+='</tbody></table></div></div>';
   document.getElementById('main').innerHTML=h;
 }
 
 async function addProduct(){
-  var d={nombre:document.getElementById('np-nom').value,codigo:document.getElementById('np-cod').value,marca:document.getElementById('np-mar').value,categoria:document.getElementById('np-cat').value,costoCompra:document.getElementById('np-cost').value,precioVenta:document.getElementById('np-prev').value,stockMinimo:document.getElementById('np-min').value,vencimiento:document.getElementById('np-venc').value};
+  var d={nombre:document.getElementById('np-nom').value,codigo:document.getElementById('np-cod').value,descripcion:document.getElementById('np-desc').value,marca:document.getElementById('np-mar').value,categoria:document.getElementById('np-cat').value,unidad:document.getElementById('np-unid').value,costoCompra:document.getElementById('np-cost').value,precioVenta:document.getElementById('np-prev').value,precioMayorista:document.getElementById('np-prem').value,stockMinimo:document.getElementById('np-min').value,vencimiento:document.getElementById('np-venc').value,estado:document.getElementById('np-est').value,observaciones:document.getElementById('np-obs').value};
   if(!d.nombre){document.getElementById('np-msg').className='err';document.getElementById('np-msg').textContent='Nombre requerido';return}
   var r=await api('createProduct',d);
   if(r.error){document.getElementById('np-msg').className='err';document.getElementById('np-msg').textContent=r.error;return}
